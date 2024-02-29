@@ -1,6 +1,6 @@
 module.exports = {
   content: [
     "*.js",
-    "./view/*.js"
+    "./views/*.js"
   ]
 }

@@ -1,4 +1,4 @@
-import Tasks from './Tasks.js';
+import Tasks from './views/Tasks.js';
 
 export default function App() {
   return (
