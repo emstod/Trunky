@@ -34,13 +34,13 @@ function TaskGroup() {
   )
 }
 
-export default function Tasks({ navigation }) {
+export default function Goals({ navigation }) {
   return (
     <View>
       <FAB 
         icon="plus"
         style={{position:'absolute', margin:16, right:0, bottom:0, zIndex:1}}
-        onPress={() => navigation.navigate('Goals')}
+        onPress={() => {}}
       />
       <ScrollView>
         <TaskGroup/>
