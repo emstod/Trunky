@@ -1,11 +1,12 @@
-import { PaperProvider, Icon, useTheme } from 'react-native-paper';
+import { PaperProvider, Icon, useTheme } from 'react-native-paper'
 import { NavigationContainer } from '@react-navigation/native'
-import Tasks from './views/Tasks.js';
-import TasksCategory from './views/TasksCategory.js';
-import Goals from './views/Goals.js';
-import Dashboard from './views/Dashboard.js';
-import Schedule from './views/Schedule.js';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Tasks from './views/Tasks.js'
+import TasksCategory from './views/TasksCategory.js'
+import TasksDetail from './views/TasksDetail.js'
+import Goals from './views/Goals.js'
+import Dashboard from './views/Dashboard.js'
+import Schedule from './views/Schedule.js'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 
@@ -15,12 +16,16 @@ const TasksStack = createNativeStackNavigator()
 
 function TasksStackScreen() {
   return (
-    <TasksStack.Navigator>
+    <TasksStack.Navigator initialRouteName='Tasks'>
       <TasksStack.Screen
         name='Tasks'
         component={Tasks}
       />
-      {/* TODO: Dynamically generate one screen for each category in the database */}
+      <TasksStack.Screen
+        name='TasksDetail'
+        component={TasksDetail}
+        options={{headerShown:false}}
+      />
       <TasksStack.Screen
         name='TasksCategory'
         component={TasksCategory}
@@ -71,18 +76,13 @@ export default function App() {
             options={{headerShown:false}}
           />
           <Tab.Screen
+            name="Schedule"
+            component={Schedule}
+          />
+          <Tab.Screen
             name="TasksStack"
             component={TasksStackScreen}
             options={{headerShown:false, title: 'Tasks'}}
-          />
-          {/* <Tab.Screen
-            name="TasksCategory"
-            component={TasksCategory}
-            options={{title: 'School'}}
-          /> */}
-          <Tab.Screen
-            name="Schedule"
-            component={Schedule}
           />
           <Tab.Screen
             name="Goals"
