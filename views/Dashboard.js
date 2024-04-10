@@ -1,11 +1,11 @@
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
-import { Card, Text, IconButton, Surface, Checkbox, List } from 'react-native-paper'
+import { Card, Text, IconButton, Checkbox, List, BottomNavigation } from 'react-native-paper'
 
 export default function Dashboard({ navigation }) {
   return (
     <View>
-      <ScrollView>
+      <ScrollView style={{marginTop:50}}>
         <Text variant='displaySmall' style={{margin:15}}>Hi, Milly</Text>
         <Card style={{marginHorizontal:15, marginVertical:7}}>
           <Card.Content>
@@ -93,6 +93,7 @@ export default function Dashboard({ navigation }) {
           </Card.Content>
         </Card>
       </ScrollView>
+      <StatusBar style='auto' />
     </View>
   )
 }
