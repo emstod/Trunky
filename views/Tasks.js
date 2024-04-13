@@ -25,10 +25,10 @@ export function TaskSingle() {
           Module 11 Homework
         </Button>
         <IconButton 
-            mode="contained-tonal"
-            containerColor={theme.colors.tertiaryContainer}
-            onPress={() => navigation.navigate('TasksCategory')}
-          />
+          mode="contained-tonal"
+          containerColor={theme.colors.tertiaryContainer}
+          onPress={() => navigation.navigate('TasksCategory')}
+        />
         <IconButton 
           icon="pencil"
           mode="contained-tonal"
