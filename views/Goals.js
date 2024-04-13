@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
-import { Card, Text, IconButton, Surface, List, FAB } from 'react-native-paper'
+import { Card, IconButton, Surface, List, FAB } from 'react-native-paper'
+import { useNavigation } from '@react-navigation/native'
 
 function GoalSingle() {
   return (
@@ -27,6 +28,7 @@ function GoalSingle() {
 }
 
 function GoalGroup() {
+  const navigation = useNavigation()
   return (
     <Card style={{margin:10}}>
       <Card.Title title='Work' titleVariant='titleLarge' />
@@ -39,7 +41,7 @@ function GoalGroup() {
   )
 }
 
-export default function Goals({ navigation }) {
+export default function Goals() {
   return (
     <View>
       <FAB 

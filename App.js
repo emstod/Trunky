@@ -3,15 +3,18 @@ import { NavigationContainer } from '@react-navigation/native'
 import Tasks from './views/Tasks.js'
 import TasksCategory from './views/TasksCategory.js'
 import TasksDetail from './views/TasksDetail.js'
+import TasksEdit from './views/TasksEdit.js'
 import Goals from './views/Goals.js'
 import Dashboard from './views/Dashboard.js'
 import Schedule from './views/Schedule.js'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { en, registerTranslation } from 'react-native-paper-dates'
 
+// Register translation for date picker
+registerTranslation('en', en)
 
 // Create the navigation stacks for each tab as needed
-
 const TasksStack = createNativeStackNavigator()
 
 function TasksStackScreen() {
@@ -30,6 +33,11 @@ function TasksStackScreen() {
         name='TasksCategory'
         component={TasksCategory}
         options={{title:'School'}}
+      />
+      <TasksStack.Screen
+        name='TasksEdit'
+        component={TasksEdit}
+        options={{headerShown:false}}
       />
     </TasksStack.Navigator>
   )

@@ -1,9 +1,11 @@
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Card, IconButton, Surface, Checkbox, FAB, Button, useTheme } from 'react-native-paper'
+import { useNavigation } from '@react-navigation/native'
 
-function TaskSingle({ navigation }) {
+export function TaskSingle() {
   const theme = useTheme()
+  const navigation = useNavigation()
 
   return (
     <Surface 
@@ -31,13 +33,14 @@ function TaskSingle({ navigation }) {
           icon="pencil"
           mode="contained-tonal"
           size={20}
-          onPress={() => {}}
+          onPress={()=>navigation.navigate('TasksEdit', {taskName:'Module 11 Homework'})}
         />
     </Surface>
   )
 }
 
-function TaskGroup({ navigation }) {
+function TaskGroup() {
+  const navigation = useNavigation()
   return (
     <Card style={{margin:10}}>
       <Card.Title title='Jan 05' titleVariant='titleLarge' />
@@ -50,7 +53,8 @@ function TaskGroup({ navigation }) {
   )
 }
 
-export default function Tasks({ navigation }) {
+export default function Tasks() {
+  const navigation = useNavigation()
   return (
     <View>
       <FAB

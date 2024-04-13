@@ -1,40 +1,23 @@
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Card, Text, IconButton, Surface, Checkbox, FAB } from 'react-native-paper'
-
-function TaskSingle() {
-  return (
-    <Surface style={{marginBottom:10, padding:10, flexDirection:'row', justifyContent:'space-between', alignItems:'center', borderRadius:10, maxWidth:'100%'}} mode='flat' elevation='4'>
-        <Checkbox
-          onPress={() => {}}
-        />
-        <Text style={{flexBasis:'80%', flexShrink:1}} variant='labelLarge'>Module 11 Homework</Text>
-        <IconButton 
-            mode="contained-tonal"
-            onPress={() => {}}
-          />
-        <IconButton 
-          icon="pencil"
-          mode="contained-tonal"
-          size={20}
-          onPress={() => {}}
-        />
-    </Surface>
-  )
-}
+import { TaskSingle } from './Tasks.js'
+import { useNavigation } from '@react-navigation/native'
 
 function TaskGroup() {
+  const navigation = useNavigation()
   return (
     <Card style={{margin:10}}>
       <Card.Title title='Jan 05' titleVariant='titleLarge' />
       <Card.Content>
-        <TaskSingle/>
+        <TaskSingle />
       </Card.Content>
     </Card>
   )
 }
 
-export default function TasksCategory({ navigation }) {
+export default function TasksCategory() {
+  const navigation = useNavigation()
   return (
     <View>
       <FAB 

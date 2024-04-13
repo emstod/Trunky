@@ -1,8 +1,10 @@
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
-import { Card, Text, IconButton, Checkbox, List, BottomNavigation } from 'react-native-paper'
+import { Card, Text, IconButton, Checkbox, List } from 'react-native-paper'
+import { useNavigation } from '@react-navigation/native'
 
-export default function Dashboard({ navigation }) {
+export default function Dashboard() {
+  const navigation = useNavigation()
   return (
     <View>
       <ScrollView style={{marginTop:50}}>
@@ -29,7 +31,7 @@ export default function Dashboard({ navigation }) {
             </Card.Content>
           </Card>
         </View>
-        <Card style={{marginHorizontal:15, marginVertical:7}} onPress={() => navigation.navigate('Tasks')}>
+        <Card style={{marginHorizontal:15, marginVertical:7}} onPress={() => navigation.navigate('TasksStack')}>
           <Card.Title title='Today&apos;s To Do' titleVariant='labelLarge' />
           <Card.Content>
             <List.Item
