@@ -9,6 +9,7 @@ import GoalsDetail from './views/GoalsDetail.js'
 import GoalsEdit from './views/GoalsEdit.js'
 import Dashboard from './views/Dashboard.js'
 import Schedule from './views/Schedule.js'
+import ScheduleDetail from './views/ScheduleDetail.js'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { en, registerTranslation } from 'react-native-paper-dates'
@@ -17,6 +18,25 @@ import { en, registerTranslation } from 'react-native-paper-dates'
 registerTranslation('en', en)
 
 // Create the navigation stacks for each tab as needed
+const ScheduleStack = createNativeStackNavigator()
+
+function ScheduleStackScreen() {
+  return (
+    <ScheduleStack.Navigator initialRouteName='Schedule'>
+      <ScheduleStack.Screen
+        name='Schedule'
+        component={Schedule}
+      />
+      <ScheduleStack.Screen
+        name='ScheduleDetail'
+        component={ScheduleDetail}
+        options={{headerShown:false}}
+      />
+    </ScheduleStack.Navigator>
+  )
+}
+
+
 const TasksStack = createNativeStackNavigator()
 
 function TasksStackScreen() {
@@ -25,6 +45,7 @@ function TasksStackScreen() {
       <TasksStack.Screen
         name='Tasks'
         component={Tasks}
+        options={{headerShown:false}}
       />
       <TasksStack.Screen
         name='TasksDetail'
@@ -86,7 +107,7 @@ export default function App() {
                 case 'Dashboard':
                   iconName = 'home'
                   break
-                case 'Schedule':
+                case 'ScheduleStack':
                   iconName='calendar-blank'
                   break
                 case 'TasksStack':
@@ -108,8 +129,9 @@ export default function App() {
             options={{headerShown:false}}
           />
           <Tab.Screen
-            name="Schedule"
-            component={Schedule}
+            name="ScheduleStack"
+            component={ScheduleStackScreen}
+            options={{headerShown:false, title: 'Schedule'}}
           />
           <Tab.Screen
             name="TasksStack"
