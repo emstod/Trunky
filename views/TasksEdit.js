@@ -454,7 +454,14 @@ export default function TasksEdit({ route }) {
                   <Button mode='outlined' onPress={hideDelete}>
                     Cancel
                   </Button>
-                  <Button mode='contained' buttonColor={theme.colors.error} onPress={() => navigation.navigate('Tasks')}>
+                  <Button
+                    mode='contained'
+                    buttonColor={theme.colors.error}
+                    onPress={() => {
+                      navigation.navigate('Tasks')
+                      hideDelete()
+                    }}
+                  >
                     Delete
                   </Button>
                 </Card.Actions>

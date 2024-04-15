@@ -5,6 +5,8 @@ import TasksCategory from './views/TasksCategory.js'
 import TasksDetail from './views/TasksDetail.js'
 import TasksEdit from './views/TasksEdit.js'
 import Goals from './views/Goals.js'
+import GoalsDetail from './views/GoalsDetail.js'
+import GoalsEdit from './views/GoalsEdit.js'
 import Dashboard from './views/Dashboard.js'
 import Schedule from './views/Schedule.js'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -43,8 +45,30 @@ function TasksStackScreen() {
   )
 }
 
+const GoalsStack = createNativeStackNavigator()
 
+function GoalsStackScreen() {
+  return (
+    <GoalsStack.Navigator initialRouteName='Goals'>
+      <GoalsStack.Screen
+        name='Goals'
+        component={Goals}
+      />
+      <GoalsStack.Screen
+        name='GoalsDetail'
+        component={GoalsDetail}
+        options={{headerShown:false}}
+      />
+      <GoalsStack.Screen
+        name='GoalsEdit'
+        component={GoalsEdit}
+        options={{headerShown:false}}
+      />
+    </GoalsStack.Navigator>
+  )
+}
 
+// Tab navigation
 const Tab = createBottomTabNavigator()
 
 export default function App() {
@@ -68,7 +92,7 @@ export default function App() {
                 case 'TasksStack':
                   iconName='format-list-checks'
                   break
-                case 'Goals':
+                case 'GoalsStack':
                   iconName='bullseye-arrow'
                   break
               }
@@ -93,8 +117,9 @@ export default function App() {
             options={{headerShown:false, title: 'Tasks'}}
           />
           <Tab.Screen
-            name="Goals"
-            component={Goals}
+            name="GoalsStack"
+            component={GoalsStackScreen}
+            options={{headerShown:false, title: 'Goals'}}
           />
         </Tab.Navigator>
       </NavigationContainer>
