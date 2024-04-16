@@ -52,15 +52,27 @@ export default function GoalsDetail({ route }) {
             elevation='4'>
               <Button
                 icon='format-list-checks'
-                onPress={() => navigation.navigate('Tasks')}
+                onPress={() => {
+                  navigation.navigate('TasksStack', {
+                    screen:'TasksDetail',
+                    initial: false,
+                    params: {taskName: 'Email professor about extra credit'}
+                  })
+                }}
               >
-                Finish homework before Netflix
+                Email professor about extra credit
               </Button>
               <Button
                 icon='format-list-checks'
-                onPress={() => navigation.navigate('Tasks')}
+                onPress={() => {
+                  navigation.navigate('TasksStack', {
+                    screen:'TasksDetail',
+                    initial: false,
+                    params: {taskName: 'Module 11 Homework'}
+                  })
+                }}
               >
-                Get A&apos;s this semester
+                Module 11 Homework
               </Button>
           </Surface>
           

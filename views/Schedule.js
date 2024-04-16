@@ -10,7 +10,7 @@ export default function Schedule() {
   const renderCustomEvent = (event) => {
     return (
       <Button
-        onPress={() => navigation.navigate('ScheduleDetail', {eventName:event.title})}
+        onPress={() => navigation.navigate('ScheduleDetail', {eventDetails:event})}
         style={{margin:-7}}
         textColor='black'
       >

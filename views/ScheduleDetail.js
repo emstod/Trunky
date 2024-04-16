@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
-import { Text, Icon, IconButton, useTheme, Portal, Modal, Card, Button, Surface, List } from 'react-native-paper'
+import { Text, Icon, IconButton, useTheme, Portal, Modal, Card, Button, Surface, Chip } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
 
 export default function ScheduleDetail({ route }) {
   const navigation = useNavigation()
-  const eventName = route.params['eventName']
+  const eventDetails = route.params['eventDetails']
   const theme = useTheme()
 
   const [deleteVisible, setDeleteVisible] = React.useState(false)
@@ -18,13 +18,16 @@ export default function ScheduleDetail({ route }) {
       <ScrollView>
         <View style={{paddingHorizontal:15, paddingTop:75, paddingBottom:20}}>
           <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
-            <Text variant='headlineLarge' style={{flexShrink:1, flexBasis:'80%'}}>{eventName}</Text>
+            <Text variant='headlineLarge' style={{flexShrink:1, flexBasis:'80%'}}>{eventDetails.title}</Text>
             <IconButton
               mode='contained'
               containerColor={theme.colors.tertiaryContainer}
             />
           </View>
-          <Text variant='labelLarge' style={{paddingVertical:8}}>April 15, 8:00 am - April 15, 9:00 am</Text>
+          <Text variant='labelLarge' style={{paddingVertical:8}}>{eventDetails.start.split(' ')[1].slice(0, 5)} - {eventDetails.end.split(' ')[1].slice(0, 5)}</Text>
+          <View style={{display:'flex', flexDirection:'row'}}>
+            <Chip style={{backgroundColor:theme.colors.errorContainer}}>Backup</Chip>
+          </View>
           <Text variant='bodyLarge' style={{paddingVertical:15}}>This is the event description.</Text>
           <View style={{paddingVertical:15, display:'flex', flexDirection:'row', gap:10}}>
             <Icon
@@ -48,13 +51,25 @@ export default function ScheduleDetail({ route }) {
             elevation='4'>
               <Button
                 icon='bullseye-arrow'
-                onPress={() => navigation.navigate('Goals')}
+                onPress={() => {
+                  navigation.navigate('GoalsStack', {
+                    screen:'GoalsDetail',
+                    initial: false,
+                    params: {goalName: 'Finish homework before Netflix'}
+                  })
+                }}
               >
                 Finish homework before Netflix
               </Button>
               <Button
                 icon='bullseye-arrow'
-                onPress={() => navigation.navigate('Goals')}
+                onPress={() => {
+                  navigation.navigate('GoalsStack', {
+                    screen:'GoalsDetail',
+                    initial: false,
+                    params: {goalName: 'Get A\'s this semester'}
+                  })
+                }}
               >
                 Get A&apos;s this semester
               </Button>
@@ -66,15 +81,27 @@ export default function ScheduleDetail({ route }) {
             elevation='4'>
               <Button
                 icon='format-list-checks'
-                onPress={() => navigation.navigate('Tasks')}
+                onPress={() => {
+                  navigation.navigate('TasksStack', {
+                    screen:'TasksDetail',
+                    initial: false,
+                    params: {taskName: 'Email professor about extra credit'}
+                  })
+                }}
               >
-                Finish homework before Netflix
+                Email professor about extra credit
               </Button>
               <Button
                 icon='format-list-checks'
-                onPress={() => navigation.navigate('Tasks')}
+                onPress={() => {
+                  navigation.navigate('TasksStack', {
+                    screen:'TasksDetail',
+                    initial: false,
+                    params: {taskName: 'Module 11 Homework'}
+                  })
+                }}
               >
-                Get A&apos;s this semester
+                Module 11 Homework
               </Button>
           </Surface>
           
@@ -90,7 +117,7 @@ export default function ScheduleDetail({ route }) {
               icon='pencil'
               mode='outlined'
               size={20}
-              onPress={() => navigation.navigate('ScheduleEdit', {eventName: eventName})}
+              onPress={() => navigation.navigate('ScheduleEdit', {eventDetails: eventDetails})}
             />
           </View>
 

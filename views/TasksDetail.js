@@ -48,13 +48,25 @@ export default function TasksDetail({ route }) {
             elevation='4'>
               <Button
                 icon='bullseye-arrow'
-                onPress={() => navigation.navigate('Goals')}
+                onPress={() => {
+                  navigation.navigate('GoalsStack', {
+                    screen:'GoalsDetail',
+                    initial: false,
+                    params: {goalName: 'Finish homework before Netflix'}
+                  })
+                }}
               >
                 Finish homework before Netflix
               </Button>
               <Button
                 icon='bullseye-arrow'
-                onPress={() => navigation.navigate('Goals')}
+                onPress={() => {
+                  navigation.navigate('GoalsStack', {
+                    screen:'GoalsDetail',
+                    initial: false,
+                    params: {goalName: 'Get A\'s this semester'}
+                  })
+                }}
               >
                 Get A&apos;s this semester
               </Button>

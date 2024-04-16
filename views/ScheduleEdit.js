@@ -7,12 +7,14 @@ import { useNavigation } from '@react-navigation/native'
 
 export default function ScheduleEdit({ route }) {
   const navigation = useNavigation()
-  const taskName = route.params['eventName']
+  const eventDetails = route.params['eventDetails']
+  console.log(eventDetails)
   const theme = useTheme()
-  const [title, setTitle] = React.useState(taskName)
+  const [title, setTitle] = React.useState(eventDetails.title)
   const [desc, setDesc] = React.useState('')
-  const [startDate, setStartDate] = React.useState('')
-  const [endDate, setEndDate] = React.useState('')
+  const [startDate, setStartDate] = React.useState(new Date(eventDetails.start))
+  const [endDate, setEndDate] = React.useState(new Date(eventDetails.start))
+  const [backup, setBackup] = React.useState(true)
   const [categoryVisible, setCategoryVisible] = React.useState(false)
   const [reminderVisible, setReminderVisible] = React.useState(false)
   const [deleteVisible, setDeleteVisible] = React.useState(false)
@@ -22,6 +24,8 @@ export default function ScheduleEdit({ route }) {
   const [endTimeVisible, setEndTimeVisible] = React.useState(false)
   const [tasksVisible, setTasksVisible] = React.useState(false)
   const [checked, setChecked] = React.useState('')
+  const [startTime, setStartTime] = React.useState(eventDetails.start.split(' ')[1].slice(0, 5))
+  const [endTime, setEndTime] = React.useState(eventDetails.end.split(' ')[1].slice(0, 5))
 
   const showCategory = () => setCategoryVisible(true)
   const hideCategory = () => setCategoryVisible(false)
@@ -133,6 +137,8 @@ export default function ScheduleEdit({ route }) {
             label='Start date'
             value={startDate}
             onChange={(date) => {
+              console.log('hi')
+              console.log(date)
               setStartDate(date)
               setEndDate(date)
             }}
@@ -141,7 +147,7 @@ export default function ScheduleEdit({ route }) {
             style={{marginTop:8}}
           />
           <List.Item
-            title='9:00 am'
+            title={startTime}
             left={() => <IconButton icon='clock-edit-outline' onPress={showStartTime} style={{marginHorizontal:-5}} />}
             style={{marginVertical:-5}}
           />
@@ -149,7 +155,7 @@ export default function ScheduleEdit({ route }) {
             visible={startTimeVisible}
             onDismiss={hideStartTime}
             onConfirm={({hours, minutes}) => {
-              console.log({hours, minutes})
+              setStartTime(`${hours}:${minutes}`)
               hideStartTime()
             }}
           />
@@ -164,7 +170,7 @@ export default function ScheduleEdit({ route }) {
             style={{marginTop:8}}
           />
           <List.Item
-            title='10:00 am'
+            title={endTime}
             left={() => <IconButton icon='clock-edit-outline' onPress={showEndTime} style={{marginHorizontal:-5}} />}
             style={{marginVertical:-5}}
           />
@@ -172,11 +178,23 @@ export default function ScheduleEdit({ route }) {
             visible={endTimeVisible}
             onDismiss={hideEndTime}
             onConfirm={({hours, minutes}) => {
-              console.log({hours, minutes})
+              setEndTime(`${hours}:${minutes}`)
               hideEndTime()
             }}
           />
           
+          <Divider style={{marginVertical:15}} />
+
+          <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:10}}>
+            <Checkbox
+              status = {backup ? 'checked' : 'unchecked'}
+              onPress = {() => {
+                setBackup(!backup)
+              }}
+            />
+            <Text variant='bodyLarge'>Backup</Text>
+          </View>
+
           <Divider style={{marginVertical:15}} />
 
           {/* Reminders */}
@@ -406,7 +424,7 @@ export default function ScheduleEdit({ route }) {
 
           {/* Tasks */}
           <List.Item
-            title='Set screen time rules'
+            title='Email professor about extra credit'
             left={() => <List.Icon icon='format-list-checks' />}
             right={() => <IconButton icon='minus' style={{margin:0}} onPress={() => {}}/>}
             style={{marginVertical:-5}}
