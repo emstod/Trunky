@@ -60,7 +60,7 @@ export default function Tasks() {
       <FAB
         icon="plus"
         style={{position:'absolute', margin:16, right:0, bottom:0, zIndex:1}}
-        onPress={() => {}}
+        onPress={() => navigation.navigate('TasksEdit', {taskName:''})}
       />
       <ScrollView>
         <TaskGroup navigation={navigation}/>

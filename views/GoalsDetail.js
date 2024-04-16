@@ -45,7 +45,7 @@ export default function GoalsDetail({ route }) {
           </View>
           
 
-          {/* Goals */}
+          {/* Tasks */}
           <Surface
             style={{marginVertical:15, paddingHorizontal:15, paddingVertical:10, borderRadius:10, display:'flex', flexDirection:'column', alignItems:'flex-start'}}
             mode='flat'

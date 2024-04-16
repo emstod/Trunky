@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native'
 
 export default function ScheduleDetail({ route }) {
   const navigation = useNavigation()
-  const taskName = route.params['eventName']
+  const eventName = route.params['eventName']
   const theme = useTheme()
 
   const [deleteVisible, setDeleteVisible] = React.useState(false)
@@ -18,14 +18,14 @@ export default function ScheduleDetail({ route }) {
       <ScrollView>
         <View style={{paddingHorizontal:15, paddingTop:75, paddingBottom:20}}>
           <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
-            <Text variant='headlineLarge' style={{flexShrink:1, flexBasis:'80%'}}>{taskName}</Text>
+            <Text variant='headlineLarge' style={{flexShrink:1, flexBasis:'80%'}}>{eventName}</Text>
             <IconButton
               mode='contained'
               containerColor={theme.colors.tertiaryContainer}
             />
           </View>
-          <Text variant='labelLarge' style={{paddingVertical:8}}>January 5, 2024</Text>
-          <Text variant='bodyLarge' style={{paddingVertical:15}}>This is the task description.</Text>
+          <Text variant='labelLarge' style={{paddingVertical:8}}>April 15, 8:00 am - April 15, 9:00 am</Text>
+          <Text variant='bodyLarge' style={{paddingVertical:15}}>This is the event description.</Text>
           <View style={{paddingVertical:15, display:'flex', flexDirection:'row', gap:10}}>
             <Icon
               source='bell'
@@ -59,6 +59,24 @@ export default function ScheduleDetail({ route }) {
                 Get A&apos;s this semester
               </Button>
           </Surface>
+
+          <Surface
+            style={{marginVertical:15, paddingHorizontal:15, paddingVertical:10, borderRadius:10, display:'flex', flexDirection:'column', alignItems:'flex-start'}}
+            mode='flat'
+            elevation='4'>
+              <Button
+                icon='format-list-checks'
+                onPress={() => navigation.navigate('Tasks')}
+              >
+                Finish homework before Netflix
+              </Button>
+              <Button
+                icon='format-list-checks'
+                onPress={() => navigation.navigate('Tasks')}
+              >
+                Get A&apos;s this semester
+              </Button>
+          </Surface>
           
           {/* Buttons */}
           <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end'}}>
@@ -72,13 +90,7 @@ export default function ScheduleDetail({ route }) {
               icon='pencil'
               mode='outlined'
               size={20}
-              onPress={() => navigation.navigate('TasksEdit', {taskName:'Module 11 Homework'})}
-            />
-            <IconButton
-              icon='check-bold'
-              mode='contained'
-              size={20}
-              onPress={() => navigation.navigate('Tasks')}
+              onPress={() => navigation.navigate('ScheduleEdit', {eventName: eventName})}
             />
           </View>
 

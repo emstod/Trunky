@@ -36,7 +36,8 @@ export default function Schedule() {
 
   timelineProps = {
     format24h: false,
-    renderEvent: renderCustomEvent
+    renderEvent: renderCustomEvent,
+    onBackgroundLongPress: () => navigation.navigate('ScheduleEdit', {eventName:''})
   }
 
   eventsByDate = groupBy(timelineEvents, e => CalendarUtils.getCalendarDateString(e.start))
@@ -51,6 +52,7 @@ export default function Schedule() {
         events={eventsByDate}
         showNowIndicator
         timelineProps={timelineProps}
+        scrollToNow
       />
     </CalendarProvider>
 

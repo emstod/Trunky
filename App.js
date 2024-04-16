@@ -10,6 +10,7 @@ import GoalsEdit from './views/GoalsEdit.js'
 import Dashboard from './views/Dashboard.js'
 import Schedule from './views/Schedule.js'
 import ScheduleDetail from './views/ScheduleDetail.js'
+import ScheduleEdit from './views/ScheduleEdit.js'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { en, registerTranslation } from 'react-native-paper-dates'
@@ -32,6 +33,11 @@ function ScheduleStackScreen() {
         component={ScheduleDetail}
         options={{headerShown:false}}
       />
+      <ScheduleStack.Screen
+        name='ScheduleEdit'
+        component={ScheduleEdit}
+        options={{headerShown:false}}
+      />
     </ScheduleStack.Navigator>
   )
 }
@@ -45,7 +51,6 @@ function TasksStackScreen() {
       <TasksStack.Screen
         name='Tasks'
         component={Tasks}
-        options={{headerShown:false}}
       />
       <TasksStack.Screen
         name='TasksDetail'

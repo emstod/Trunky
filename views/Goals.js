@@ -9,7 +9,7 @@ function GoalSingle() {
     <Surface style={{marginBottom:10, padding:10, display: 'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center', borderRadius:10, maxWidth:'100%'}} mode='flat' elevation='4'>
         <List.Item
           title='0/1'
-          left={() => <IconButton 
+          left={() => <IconButton
             icon="plus"
             mode="outlined"
             size={10}
@@ -37,7 +37,6 @@ function GoalSingle() {
 }
 
 function GoalGroup() {
-  const navigation = useNavigation()
   return (
     <Card style={{margin:10}}>
       <Card.Title title='School' titleVariant='titleLarge' />
@@ -51,12 +50,13 @@ function GoalGroup() {
 }
 
 export default function Goals() {
+  const navigation = useNavigation()
   return (
     <View>
       <FAB 
         icon="plus"
         style={{position:'absolute', margin:16, right:0, bottom:0, zIndex:1}}
-        onPress={() => {}}
+        onPress={() => navigation.navigate('GoalsEdit', {goalName:''})}
       />
       <ScrollView>
         <GoalGroup/>
