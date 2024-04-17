@@ -8,6 +8,8 @@ import { useNavigation } from '@react-navigation/native'
 export default function ScheduleEdit({ route }) {
   const navigation = useNavigation()
   const eventDetails = route.params['eventDetails']
+  let startTimeParam = eventDetails.start ? eventDetails.start.split(' ')[1].slice(0, 5) : ''
+  let endTimeParam = eventDetails.end ? eventDetails.end.split(' ')[1].slice(0, 5) : ''
   console.log(eventDetails)
   const theme = useTheme()
   const [title, setTitle] = React.useState(eventDetails.title)
@@ -24,8 +26,8 @@ export default function ScheduleEdit({ route }) {
   const [endTimeVisible, setEndTimeVisible] = React.useState(false)
   const [tasksVisible, setTasksVisible] = React.useState(false)
   const [checked, setChecked] = React.useState('')
-  const [startTime, setStartTime] = React.useState(eventDetails.start.split(' ')[1].slice(0, 5))
-  const [endTime, setEndTime] = React.useState(eventDetails.end.split(' ')[1].slice(0, 5))
+  const [startTime, setStartTime] = React.useState(startTimeParam)
+  const [endTime, setEndTime] = React.useState(endTimeParam)
 
   const showCategory = () => setCategoryVisible(true)
   const hideCategory = () => setCategoryVisible(false)

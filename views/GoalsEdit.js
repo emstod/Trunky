@@ -1,22 +1,22 @@
-import * as React from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Card, Text, IconButton, useTheme, TextInput, Portal, Modal, RadioButton, List, Checkbox, Button, Divider, Chip, Icon } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
+import * as React from 'react'
 
 export default function GoalsEdit({ route }) {
   const navigation = useNavigation()
-  const goalName = route.params['goalName']
+  const goalDetails = route.params['goalDetails']
   const theme = useTheme()
-  const [title, setTitle] = React.useState(goalName)
-  const [desc, setDesc] = React.useState('')
-  const [quantity, setQuanitity] = React.useState('0')
+  const [title, setTitle] = React.useState(goalDetails.title)
+  const [desc, setDesc] = React.useState(goalDetails.description)
+  const [quantity, setQuanitity] = React.useState(goalDetails.quantity)
   const [categoryVisible, setCategoryVisible] = React.useState(false)
   const [frequencyVisible, setFrequencyVisible] = React.useState(false)
   const [deleteVisible, setDeleteVisible] = React.useState(false)
   const [tasksVisible, setTasksVisible] = React.useState(false)
   const [checked, setChecked] = React.useState('')
-  const [frequency, setFrequency] = React.useState('daily')
+  const [frequency, setFrequency] = React.useState(goalDetails.frequency)
   const [taskList, setTaskList] = React.useState([])
 
   const showCategory = () => setCategoryVisible(true)
@@ -120,7 +120,7 @@ export default function GoalsEdit({ route }) {
           <View style={{display:'flex', flexDirection:'row', alignItems:'center', gap:15}}>
             <TextInput
               label='Quantity'
-              value={quantity}
+              value={`${quantity}`}
               mode='outlined'
               onChangeText={quantity => setQuanitity(quantity)}
             />
@@ -360,7 +360,31 @@ export default function GoalsEdit({ route }) {
               icon='check-bold'
               mode='contained'
               size={25}
-              onPress={() => navigation.navigate('Goals')}
+              onPress={async () => {
+                let bodyObject = {
+                  id: goalDetails.id,
+                  title: title,
+                  description: desc,
+                  frequency: frequency,
+                  quantity: quantity,
+                  categoryId: goalDetails.categoryId
+                }
+                let options = {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(bodyObject)
+                }
+                try {
+                  let response = await fetch('http://192.168.1.178:3000/goals', options)
+                  let success = await response.json()
+                  console.log(success)
+                  navigation.navigate('Goals')
+                } catch(error) {
+                  console.error(error)
+                }
+              }}
             />
           </View>
 
@@ -375,7 +399,11 @@ export default function GoalsEdit({ route }) {
                   <Button mode='outlined' onPress={hideDelete}>
                     Cancel
                   </Button>
-                  <Button mode='contained' buttonColor={theme.colors.error} onPress={() => navigation.navigate('Goals')}>
+                  <Button
+                    mode='contained'
+                    buttonColor={theme.colors.error}
+                    onPress={() => navigation.navigate('Goals')}
+                  >
                     Delete
                   </Button>
                 </Card.Actions>

@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native'
 
 export default function GoalsDetail({ route }) {
   const navigation = useNavigation()
-  const goalName = route.params['goalName']
+  const goalDetails = route.params['goalDetails']
   const theme = useTheme()
 
   const [deleteVisible, setDeleteVisible] = React.useState(false)
@@ -18,14 +18,13 @@ export default function GoalsDetail({ route }) {
       <ScrollView>
         <View style={{paddingHorizontal:15, paddingTop:75, paddingBottom:20}}>
           <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
-            <Text variant='headlineLarge' style={{flexShrink:1, flexBasis:'80%'}}>{goalName}</Text>
+            <Text variant='headlineLarge' style={{flexShrink:1, flexBasis:'80%'}}>{goalDetails.title}</Text>
             <IconButton
               mode='contained'
               containerColor={theme.colors.tertiaryContainer}
             />
           </View>
-          <Text variant='labelLarge' style={{paddingVertical:8}}>January 5, 2024</Text>
-          <Text variant='bodyLarge' style={{paddingVertical:15}}>This is the goal description.</Text>
+          <Text variant='bodyLarge' style={{paddingVertical:15}}>{goalDetails.description}</Text>
           <View style={{display:'flex', flexDirection:'row', gap:15, alignItems:'center'}}>
             <View style={{display:'flex', flexDirection:'row'}}>
               <IconButton 
@@ -41,7 +40,7 @@ export default function GoalsDetail({ route }) {
                 onPress={() => {}}
               />
             </View>
-            <Text variant='titleMedium'>0/1 daily</Text>
+            <Text variant='titleMedium'>{`0/${goalDetails.quantity} ${goalDetails.frequency}`}</Text>
           </View>
           
 
@@ -88,7 +87,7 @@ export default function GoalsDetail({ route }) {
               icon='pencil'
               mode='outlined'
               size={20}
-              onPress={() => navigation.navigate('GoalsEdit', {goalName:'Finish homework before Netflix'})}
+              onPress={() => navigation.navigate('GoalsEdit', {goalDetails:goalDetails})}
             />
           </View>
 

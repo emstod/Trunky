@@ -37,7 +37,22 @@ export default function Schedule() {
   timelineProps = {
     format24h: false,
     renderEvent: renderCustomEvent,
-    onBackgroundLongPress: () => navigation.navigate('ScheduleEdit', {eventName:''})
+    onBackgroundLongPress: (timeStr, time) => {
+      console.log(timeStr)
+      navigation.navigate('ScheduleEdit', {
+        eventDetails: {
+          end: '',
+          height: 0,
+          index: 0,
+          left: 0,
+          start: timeStr,
+          summary: '',
+          title: '',
+          top: 0,
+          width: 0
+        }
+      })
+    }
   }
 
   eventsByDate = groupBy(timelineEvents, e => CalendarUtils.getCalendarDateString(e.start))

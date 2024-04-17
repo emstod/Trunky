@@ -14,6 +14,10 @@ import ScheduleEdit from './views/ScheduleEdit.js'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { en, registerTranslation } from 'react-native-paper-dates'
+import * as Calendar from 'expo-calendar'
+import React, { useEffect } from 'react'
+
+console.log(process.env)
 
 // Register translation for date picker
 registerTranslation('en', en)
@@ -98,6 +102,17 @@ function GoalsStackScreen() {
 const Tab = createBottomTabNavigator()
 
 export default function App() {
+  useEffect(() => {
+    (async () => {
+      const { status } = await Calendar.requestCalendarPermissionsAsync()
+      if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
+        console.log('Here are all your calendars:')
+        console.log({calendars})
+      }
+    })();
+  }, [])
+
   const theme = useTheme()
   return (
     <PaperProvider>
