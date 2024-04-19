@@ -11,9 +11,12 @@ CREATE TABLE Goal (
   description TEXT,
   frequency TEXT,
   quantity INTEGER,
-  categoryID TEXT,
-  FOREIGN KEY(categoryId) REFERENCES Category(id)
+  category TEXT
 );
+
+INSERT INTO Goal VALUES('1','Get A''s this semester','Get my GPA up to 3.85!','once',1,'School');
+INSERT INTO Goal VALUES('2','Finish homework before Netflix',NULL,'daily',1,'School');
+INSERT INTO Goal VALUES('3','Take a walk twice a day','At least a quarter of a mile!','daily',2,'Work');
 
 CREATE TABLE GoalComplete (
   goalId TEXT NOT NULL,

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
-import { Text, Icon, IconButton, useTheme, Portal, Modal, Card, Button, Surface, List } from 'react-native-paper'
+import { Text, Chip, IconButton, useTheme, Portal, Modal, Card, Button, Surface, List } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
 
 export default function GoalsDetail({ route }) {
@@ -10,6 +10,7 @@ export default function GoalsDetail({ route }) {
   const theme = useTheme()
 
   const [deleteVisible, setDeleteVisible] = React.useState(false)
+  const [completed, setCompleted] = React.useState(goalDetails.completed)
   const showDelete = () => setDeleteVisible(true)
   const hideDelete = () => setDeleteVisible(false)
 
@@ -17,30 +18,74 @@ export default function GoalsDetail({ route }) {
     <View>
       <ScrollView>
         <View style={{paddingHorizontal:15, paddingTop:75, paddingBottom:20}}>
-          <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
-            <Text variant='headlineLarge' style={{flexShrink:1, flexBasis:'80%'}}>{goalDetails.title}</Text>
-            <IconButton
-              mode='contained'
-              containerColor={theme.colors.tertiaryContainer}
-            />
+          <Text variant='headlineLarge' style={{flexShrink:1, flexBasis:'80%'}}>{goalDetails.title}</Text>
+          {goalDetails.decription ? <Text variant='bodyLarge' style={{paddingVertical:15}}>{goalDetails.description}</Text> : <></>}
+          <View style={{flexDirection:'row', marginVertical:15}}>
+            <Chip><Text variant='labelLarge'>Category:</Text> <Text>{goalDetails.category}</Text></Chip>
           </View>
-          <Text variant='bodyLarge' style={{paddingVertical:15}}>{goalDetails.description}</Text>
           <View style={{display:'flex', flexDirection:'row', gap:15, alignItems:'center'}}>
             <View style={{display:'flex', flexDirection:'row'}}>
               <IconButton 
                 icon="plus"
                 mode="outlined"
                 size={10}
-                onPress={() => {}}
+                onPress={async () => {
+                  let today = new Date()
+                  let newCompleted = completed + 1
+                  console.log(`the new value is ${newCompleted}, ${typeof newCompleted}`)
+                  let options = {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({completed: newCompleted})
+                  }
+                  try {
+                    console.log('about to send fetch')
+                    let response = await fetch(`http://192.168.1.178:3000/goalcomplete/${goalDetails.id}/${today.toDateString()}`, options)
+                    console.log('returned')
+                    console.log(await response.json())
+                    console.log('got response')
+                    goalDetails.completed++
+                    setCompleted(goalDetails.completed)
+                  } catch(error) {
+                    console.error(error)
+                  }
+                }}
               />
               <IconButton 
                 icon="minus"
                 mode="outlined"
                 size={10}
-                onPress={() => {}}
+                onPress={async () => {
+                  let today = new Date()
+                  if (completed == 0) {
+                    return
+                  }
+                  let newCompleted = completed - 1
+                  console.log(`the new value is ${newCompleted}, ${typeof newCompleted}`)
+                  let options = {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({completed: newCompleted})
+                  }
+                  try {
+                    console.log('about to send fetch')
+                    let response = await fetch(`http://192.168.1.178:3000/goalcomplete/${goalDetails.id}/${today.toDateString()}`, options)
+                    console.log('returned')
+                    console.log(await response.json())
+                    console.log('got response')
+                    goalDetails.completed--
+                    setCompleted(goalDetails.completed)
+                  } catch(error) {
+                    console.error(error)
+                  }
+                }}
               />
             </View>
-            <Text variant='titleMedium'>{`0/${goalDetails.quantity} ${goalDetails.frequency}`}</Text>
+            <Text variant='titleMedium'>{`${goalDetails.completed}/${goalDetails.quantity} ${goalDetails.frequency}`}</Text>
           </View>
           
 
@@ -102,7 +147,26 @@ export default function GoalsDetail({ route }) {
                   <Button mode='outlined' onPress={hideDelete}>
                     Cancel
                   </Button>
-                  <Button mode='contained' buttonColor={theme.colors.error} onPress={() => navigation.navigate('Goals')}>
+                  <Button
+                    mode='contained'
+                    buttonColor={theme.colors.error}
+                    onPress={ async () => {
+                      console.log('sending delete')
+                      let options = {
+                        method: 'DELETE',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                      }
+                      try {
+                        let response = await fetch(`http://192.168.1.178:3000/goals/${goalDetails.id}`, options)
+                        console.log(await response.json())
+                        navigation.navigate('Goals')
+                      } catch(error) {
+                        console.error(error)
+                      }
+                    }}
+                  >
                     Delete
                   </Button>
                 </Card.Actions>

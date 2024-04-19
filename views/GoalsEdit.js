@@ -10,17 +10,14 @@ export default function GoalsEdit({ route }) {
   const theme = useTheme()
   const [title, setTitle] = React.useState(goalDetails.title)
   const [desc, setDesc] = React.useState(goalDetails.description)
+  const [category, setCategory] = React.useState(goalDetails.category)
   const [quantity, setQuanitity] = React.useState(goalDetails.quantity)
-  const [categoryVisible, setCategoryVisible] = React.useState(false)
   const [frequencyVisible, setFrequencyVisible] = React.useState(false)
   const [deleteVisible, setDeleteVisible] = React.useState(false)
   const [tasksVisible, setTasksVisible] = React.useState(false)
-  const [checked, setChecked] = React.useState('')
   const [frequency, setFrequency] = React.useState(goalDetails.frequency)
   const [taskList, setTaskList] = React.useState([])
 
-  const showCategory = () => setCategoryVisible(true)
-  const hideCategory = () => setCategoryVisible(false)
   const showFrequency = () => setFrequencyVisible(true)
   const hideFrequency = () => setFrequencyVisible(false)
   const showDelete = () => setDeleteVisible(true)
@@ -32,78 +29,14 @@ export default function GoalsEdit({ route }) {
     <View>
       <ScrollView>
         <View style={{paddingHorizontal:15, paddingTop:75, paddingBottom:20}}>
-          {/* Title and category */}
-          <View style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
-            <TextInput
-              label='Title'
-              value={title}
-              mode='outlined'
-              onChangeText={title => setTitle(title)}
-              style={{flexShrink:1, flexBasis:'80%'}}
-            />
-            <IconButton
-              mode='contained'
-              icon='pencil'
-              containerColor={theme.colors.tertiaryContainer}
-              iconColor={theme.colors.tertiary}
-              onPress={showCategory}
-            />
-
-            {/* Category modal */}
-            <Portal>
-              <Modal visible={categoryVisible} onDismiss={hideCategory} style={{marginHorizontal:15}}>
-                <Card>
-                  <Card.Title
-                    title='Category'
-                    titleVariant='titleLarge'
-                    style={{marginTop:10}}
-                  />
-                  <Card.Content>
-                    <View style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
-                      <RadioButton
-                        value="School"
-                        status={ checked === 'School' ? 'checked' : 'unchecked'}
-                        onPress={() => setChecked('School')}
-                        uncheckedColor={theme.colors.tertiaryContainer}
-                        color={theme.colors.tertiaryContainer}
-                        style={{color:'red'}}
-                      />
-                      <Text variant='titleMedium'>School</Text>
-                    </View>
-                    
-                    <View style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
-                      <RadioButton
-                        value='Work'
-                        status={ checked === 'Work' ? 'checked' : 'unchecked'}
-                        onPress={() => setChecked('Work')}
-                        uncheckedColor={theme.colors.primaryContainer}
-                        color={theme.colors.primaryContainer}
-                      />
-                      <Text variant='titleMedium'>Work</Text>
-                    </View>
-
-                    <View style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
-                      <RadioButton
-                        value='Social'
-                        status={ checked === 'Social' ? 'checked' : 'unchecked'}
-                        onPress={() => setChecked('Social')}
-                        uncheckedColor={theme.colors.surfaceVariant}
-                        color={theme.colors.surfaceVariant}
-                      />
-                      <Text variant='titleMedium'>Social</Text>
-                    </View>
-                  </Card.Content>
-                  <Card.Actions>
-                    <IconButton
-                      icon='check'
-                      mode='none'
-                      onPress={hideCategory}
-                    />
-                  </Card.Actions>
-                </Card>
-              </Modal>
-            </Portal>
-          </View>
+          {/* Title */}
+          <TextInput
+            label='Title'
+            value={title}
+            mode='outlined'
+            onChangeText={title => setTitle(title)}
+            style={{flexShrink:1, flexBasis:'80%', marginVertical:8}}
+          />
 
           {/* Description */}
           <TextInput
@@ -112,6 +45,16 @@ export default function GoalsEdit({ route }) {
             mode='outlined'
             multiline={true}
             onChangeText={desc => setDesc(desc)}
+            style={{marginVertical:8}}
+          />
+
+          {/* Category */}
+          <TextInput
+            label='Category'
+            value={category}
+            mode='outlined'
+            multiline={true}
+            onChangeText={c => setCategory(c)}
             style={{marginVertical:8}}
           />
           <Divider style={{marginVertical:15}} />
@@ -361,29 +304,62 @@ export default function GoalsEdit({ route }) {
               mode='contained'
               size={25}
               onPress={async () => {
-                let bodyObject = {
-                  id: goalDetails.id,
-                  title: title,
-                  description: desc,
-                  frequency: frequency,
-                  quantity: quantity,
-                  categoryId: goalDetails.categoryId
+                // If this is an update, do a PUT and include the ID
+                if (goalDetails.id) {
+                  let bodyObject = {
+                    id: goalDetails.id,
+                    title: title,
+                    description: desc,
+                    frequency: frequency,
+                    quantity: quantity,
+                    category: category
+                  }
+                  let options = {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bodyObject)
+                  }
+                  try {
+                    // Home IP address
+                    let response = await fetch(`http://192.168.1.178:3000/goals/${goalDetails.id}`, options)
+                    // console.log('Calling fetch to update goal')
+                    // const response = await fetch('http://10.37.154.140:3000/goals', options)
+                    let success = await response.json()
+                    console.log(success)
+                    navigation.navigate('Goals')
+                  } catch(error) {
+                    console.error(error)
+                  }
+                } else {
+                  // This is a newly-created goal, so do a POST
+                  let bodyObject = {
+                    title: title,
+                    description: desc,
+                    frequency: frequency,
+                    quantity: quantity,
+                    category: category
+                  }
+                  let options = {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bodyObject)
+                  }
+                  try {
+                    console.log('creating a goal')
+                    // Home IP address
+                    let response = await fetch(`http://192.168.1.178:3000/goals`, options)
+                    let success = await response.json()
+                    console.log(success)
+                    navigation.navigate('Goals')
+                  } catch(error) {
+                    console.error(error)
+                  }
                 }
-                let options = {
-                  method: 'PUT',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify(bodyObject)
-                }
-                try {
-                  let response = await fetch('http://192.168.1.178:3000/goals', options)
-                  let success = await response.json()
-                  console.log(success)
-                  navigation.navigate('Goals')
-                } catch(error) {
-                  console.error(error)
-                }
+                
               }}
             />
           </View>
@@ -402,7 +378,22 @@ export default function GoalsEdit({ route }) {
                   <Button
                     mode='contained'
                     buttonColor={theme.colors.error}
-                    onPress={() => navigation.navigate('Goals')}
+                    onPress={ async () => {
+                      console.log('sending delete')
+                      let options = {
+                        method: 'DELETE',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                      }
+                      try {
+                        let response = await fetch(`http://192.168.1.178:3000/goals/${goalDetails.id}`, options)
+                        console.log(await response.json())
+                        navigation.navigate('Goals')
+                      } catch(error) {
+                        console.log(error)
+                      }
+                    }}
                   >
                     Delete
                   </Button>

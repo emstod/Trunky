@@ -16,19 +16,27 @@ export function TaskSingle() {
         <Checkbox
           onPress={() => {}}
         />
-        <Button
-          mode='text'
-          textColor={theme.colors.secondary}
-          style={{flexBasis:'80%', flexShrink:1, marginLeft:-20}}
-          onPress={()=>navigation.navigate('TasksDetail', {taskName:'Module 11 Homework'})}
-        >
-          Module 11 Homework
-        </Button>
-        <IconButton 
+        <View style={{flexBasis:'90%', flexShrink:1, alignItems:'flex-start'}}>
+          <Button
+            mode='text'
+            textColor={theme.colors.secondary}
+            onPress={()=>navigation.navigate('TasksDetail', {taskName:'Module 11 Homework'})}
+          >
+            Module 11 Homework
+          </Button>
+          <Button
+            mode='text'
+            textColor={theme.colors.secondary}
+            onPress={()=>navigation.navigate('TasksDetail', {taskName:'Module 11 Homework'})}
+          >
+            Category:
+          </Button>
+        </View>
+        {/* <IconButton 
           mode="contained-tonal"
           containerColor={theme.colors.tertiaryContainer}
           onPress={() => navigation.navigate('TasksCategory')}
-        />
+        /> */}
         <IconButton 
           icon="pencil"
           mode="contained-tonal"

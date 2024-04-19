@@ -6,15 +6,37 @@ import React, { useEffect, useState, useCallback } from 'react'
 
 function GoalSingle({goal}) {
   const navigation = useNavigation()
+  const [completed, setCompleted] = React.useState(goal.completed)
+
   return (
     <Surface style={{marginBottom:10, padding:10, display: 'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center', borderRadius:10, maxWidth:'100%'}} mode='flat' elevation='4'>
         <List.Item
-          title={`0/${goal.quantity}`}
+          title={`${goal.completed}/${goal.quantity}`}
           left={() => <IconButton
             icon="plus"
             mode="outlined"
             size={10}
-            onPress={() => {}}
+            onPress={async () => {
+              let today = new Date()
+              let newCompleted = completed + 1
+              console.log(`the new value is ${newCompleted}, ${typeof newCompleted}`)
+              let options = {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({completed: newCompleted})
+              }
+              try {
+                let response = await fetch(`http://192.168.1.178:3000/goalcomplete/${goal.id}/${today.toDateString()}`, options)
+                let jsonResponse = await response.json()
+                goal.completed++
+                console.log(`Returned value is ${jsonResponse.newCompleted}`)
+                setCompleted(jsonResponse.newCompleted)
+              } catch(error) {
+                console.error(error)
+              }
+            }}
           />}
           description={goal.title}
           style={{paddingVertical:0, flexBasis:'70%', flexShrink:1}}
@@ -69,8 +91,15 @@ export default function Goals() {
           }
         }
         try {
+          console.log('about to call fetch')
+          // Home IP address
           const response = await fetch('http://192.168.1.178:3000/goals', options)
-          setGoals(await response.json())
+          // const response = await fetch('http://192.168.137.77:3000/goals', options)
+          // const response = await fetch('http://172.27.147.47:3000/goals', options)
+          // const response = await fetch('http://10.37.154.140:3000/goals', options)
+          foo = await response.json()
+          setGoals(foo)
+          console.log(foo)
         } catch(error) {
           console.error(error)
         }
