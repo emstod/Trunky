@@ -1,3 +1,17 @@
+CREATE TABLE IF NOT EXISTS Task (
+  id TEXT PRIMARY KEY,
+  title TEXT,
+  date INTEGER,
+  desc TEXT,
+  completed INTEGER,
+  category TEXT
+);
+
+INSERT INTO Task VALUES('A','Module 11 Homework',1717720494,'Details on Canvas',0,'School');
+INSERT INTO Task VALUES('B','Module 12 Homework',1717806894,'Details on Canvas',0,'School');
+INSERT INTO Task VALUES('C','Finish reports for Q2',1717806894,'Reply to Jenna once finished',0,'Work');
+INSERT INTO Task VALUES('D','Plan Jessica''s birthday party',1717806894,'',0,'Social');
+
 CREATE TABLE Event (
   id TEXT NOT NULL PRIMARY KEY,
   categoryId TEXT,

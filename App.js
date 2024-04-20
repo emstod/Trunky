@@ -1,7 +1,6 @@
 import { PaperProvider, Icon, useTheme } from 'react-native-paper'
 import { NavigationContainer } from '@react-navigation/native'
 import Tasks from './views/Tasks.js'
-import TasksCategory from './views/TasksCategory.js'
 import TasksDetail from './views/TasksDetail.js'
 import TasksEdit from './views/TasksEdit.js'
 import Goals from './views/Goals.js'
@@ -14,10 +13,13 @@ import ScheduleEdit from './views/ScheduleEdit.js'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { en, registerTranslation } from 'react-native-paper-dates'
+import { View } from 'react-native'
+import { Text, Button } from 'react-native-paper'
 import * as Calendar from 'expo-calendar'
 import React, { useEffect } from 'react'
+import {BACKEND_IP} from '@env'
 
-console.log(process.env)
+console.log(`Backend ip: ${BACKEND_IP}`)
 
 // Register translation for date picker
 registerTranslation('en', en)
@@ -62,11 +64,6 @@ function TasksStackScreen() {
         options={{headerShown:false}}
       />
       <TasksStack.Screen
-        name='TasksCategory'
-        component={TasksCategory}
-        options={{title:'School'}}
-      />
-      <TasksStack.Screen
         name='TasksEdit'
         component={TasksEdit}
         options={{headerShown:false}}
@@ -107,8 +104,8 @@ export default function App() {
       const { status } = await Calendar.requestCalendarPermissionsAsync()
       if (status === 'granted') {
         const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
-        console.log('Here are all your calendars:')
-        console.log({calendars})
+        // console.log('Here are all your calendars:')
+        // console.log({calendars})
       }
     })();
   }, [])

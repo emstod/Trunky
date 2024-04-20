@@ -3,15 +3,20 @@ import { View, ScrollView } from 'react-native'
 import { Card, IconButton, Surface, List, FAB, Text } from 'react-native-paper'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import React, { useEffect, useState, useCallback } from 'react'
+import { BACKEND_IP } from '@env'
 
 function GoalSingle({goal}) {
   const navigation = useNavigation()
   const [completed, setCompleted] = React.useState(goal.completed)
 
+  React.useEffect(() => {
+    setCompleted(goal.completed)
+  }, [goal])
+
   return (
     <Surface style={{marginBottom:10, padding:10, display: 'flex', flexDirection:'row', justifyContent:'space-between', alignItems:'center', borderRadius:10, maxWidth:'100%'}} mode='flat' elevation='4'>
         <List.Item
-          title={`${goal.completed}/${goal.quantity}`}
+          title={`${completed}/${goal.quantity}`}
           left={() => <IconButton
             icon="plus"
             mode="outlined"
@@ -19,7 +24,6 @@ function GoalSingle({goal}) {
             onPress={async () => {
               let today = new Date()
               let newCompleted = completed + 1
-              console.log(`the new value is ${newCompleted}, ${typeof newCompleted}`)
               let options = {
                 method: 'PUT',
                 headers: {
@@ -28,10 +32,9 @@ function GoalSingle({goal}) {
                 body: JSON.stringify({completed: newCompleted})
               }
               try {
-                let response = await fetch(`http://192.168.1.178:3000/goalcomplete/${goal.id}/${today.toDateString()}`, options)
+                let response = await fetch(`http://${BACKEND_IP}:3000/goalcomplete/${goal.id}/${today.toDateString()}`, options)
                 let jsonResponse = await response.json()
                 goal.completed++
-                console.log(`Returned value is ${jsonResponse.newCompleted}`)
                 setCompleted(jsonResponse.newCompleted)
               } catch(error) {
                 console.error(error)
@@ -91,15 +94,9 @@ export default function Goals() {
           }
         }
         try {
-          console.log('about to call fetch')
-          // Home IP address
-          const response = await fetch('http://192.168.1.178:3000/goals', options)
-          // const response = await fetch('http://192.168.137.77:3000/goals', options)
-          // const response = await fetch('http://172.27.147.47:3000/goals', options)
-          // const response = await fetch('http://10.37.154.140:3000/goals', options)
-          foo = await response.json()
-          setGoals(foo)
-          console.log(foo)
+          console.log('Loading goals data from server')
+          const response = await fetch(`http://${BACKEND_IP}:3000/goals`, options)
+          setGoals(await response.json())
         } catch(error) {
           console.error(error)
         }
@@ -110,10 +107,6 @@ export default function Goals() {
   )
 
   const navigation = useNavigation()
-  const users = [
-    {name: 'Anson', language: 'JavaScript'},
-    {name: 'Barbara', language: 'Python'}
-  ]
   return (
     <View style={{height:'100%'}}>
       <FAB
@@ -127,7 +120,7 @@ export default function Goals() {
               description: '',
               frequency: 'once',
               quantity: 1,
-              categoryId: 1
+              category: ''
             }
           })
         }}

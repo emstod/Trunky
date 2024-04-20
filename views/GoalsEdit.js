@@ -3,6 +3,7 @@ import { View, ScrollView } from 'react-native'
 import { Card, Text, IconButton, useTheme, TextInput, Portal, Modal, RadioButton, List, Checkbox, Button, Divider, Chip, Icon } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
 import * as React from 'react'
+import {BACKEND_IP} from '@env'
 
 export default function GoalsEdit({ route }) {
   const navigation = useNavigation()
@@ -13,15 +14,15 @@ export default function GoalsEdit({ route }) {
   const [category, setCategory] = React.useState(goalDetails.category)
   const [quantity, setQuanitity] = React.useState(goalDetails.quantity)
   const [frequencyVisible, setFrequencyVisible] = React.useState(false)
-  const [deleteVisible, setDeleteVisible] = React.useState(false)
+  const [goalsEditDeleteVisible, setGoalsEditDeleteVisible] = React.useState(false)
   const [tasksVisible, setTasksVisible] = React.useState(false)
   const [frequency, setFrequency] = React.useState(goalDetails.frequency)
   const [taskList, setTaskList] = React.useState([])
 
   const showFrequency = () => setFrequencyVisible(true)
   const hideFrequency = () => setFrequencyVisible(false)
-  const showDelete = () => setDeleteVisible(true)
-  const hideDelete = () => setDeleteVisible(false)
+  const showDelete = () => setGoalsEditDeleteVisible(true)
+  const hideDelete = () => setGoalsEditDeleteVisible(false)
   const showTasks = () => setTasksVisible(true)
   const hideTasks = () => setTasksVisible(false)
 
@@ -322,10 +323,7 @@ export default function GoalsEdit({ route }) {
                     body: JSON.stringify(bodyObject)
                   }
                   try {
-                    // Home IP address
-                    let response = await fetch(`http://192.168.1.178:3000/goals/${goalDetails.id}`, options)
-                    // console.log('Calling fetch to update goal')
-                    // const response = await fetch('http://10.37.154.140:3000/goals', options)
+                    let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}`, options)
                     let success = await response.json()
                     console.log(success)
                     navigation.navigate('Goals')
@@ -351,7 +349,7 @@ export default function GoalsEdit({ route }) {
                   try {
                     console.log('creating a goal')
                     // Home IP address
-                    let response = await fetch(`http://192.168.1.178:3000/goals`, options)
+                    let response = await fetch(`http://${BACKEND_IP}:3000/goals`, options)
                     let success = await response.json()
                     console.log(success)
                     navigation.navigate('Goals')
@@ -366,7 +364,7 @@ export default function GoalsEdit({ route }) {
 
           {/* Delete confirmation modal */}
           <Portal>
-            <Modal visible={deleteVisible} onDismiss={hideDelete} style={{marginHorizontal:15}}>
+            <Modal visible={goalsEditDeleteVisible} onDismiss={hideDelete} style={{marginHorizontal:15}}>
               <Card style={{paddingVertical:20, paddingHorizontal:10}}>
                 <Card.Content>
                   <Text variant='bodyLarge'>Are you sure?</Text>
@@ -387,7 +385,7 @@ export default function GoalsEdit({ route }) {
                         },
                       }
                       try {
-                        let response = await fetch(`http://192.168.1.178:3000/goals/${goalDetails.id}`, options)
+                        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}`, options)
                         console.log(await response.json())
                         navigation.navigate('Goals')
                       } catch(error) {
