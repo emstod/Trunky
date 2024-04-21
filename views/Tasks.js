@@ -83,7 +83,7 @@ function TaskGroup({listWithHeader: listWithHeader, categoryMode: categoryMode})
       <Card.Content>
         {
           tasksList.map((task) =>
-            <TaskSingle task={task} categoryMode={categoryMode} />
+            <TaskSingle key={task.id} task={task} categoryMode={categoryMode} />
           )
         }
       </Card.Content>
@@ -147,7 +147,7 @@ export default function Tasks() {
       <ScrollView>
         {
           tasks.map((listWithHeader) =>
-            <TaskGroup listWithHeader={listWithHeader} categoryMode={categoryMode} />
+            <TaskGroup key={listWithHeader[0]} listWithHeader={listWithHeader} categoryMode={categoryMode} />
           )
         }
       </ScrollView>

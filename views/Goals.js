@@ -73,7 +73,7 @@ function GoalGroup({categoryList}) {
       <Card.Content>
         {
           goalsList.map((goal) =>
-            <GoalSingle goal={goal} />
+            <GoalSingle key={goal.id} goal={goal} />
           )
         }
       </Card.Content>
@@ -128,7 +128,7 @@ export default function Goals() {
       <ScrollView>
         {
           goals.map((categoryList) => 
-            <GoalGroup categoryList={categoryList} />
+            <GoalGroup key={categoryList[0]} categoryList={categoryList} />
           )
         }
         <StatusBar style="auto" />

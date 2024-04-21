@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Text, Chip, IconButton, useTheme, Portal, Modal, Card, Button, Surface, Divider } from 'react-native-paper'
@@ -10,10 +10,33 @@ export default function GoalsDetail({ route }) {
   const goalDetails = route.params['goalDetails']
   const theme = useTheme()
 
-  const [goalsDetailDeleteVisible, setGoalsDetailDeleteVisible] = React.useState(false)
-  const [completed, setCompleted] = React.useState(goalDetails.completed)
+  const [goalsDetailDeleteVisible, setGoalsDetailDeleteVisible] = useState(false)
+  const [tasksList, setTasksList] = useState([])
+  const [completed, setCompleted] = useState(goalDetails.completed)
   const showDelete = () => setGoalsDetailDeleteVisible(true)
   const hideDelete = () => setGoalsDetailDeleteVisible(false)
+
+  // Get the list of linked tasks from the backend
+  useEffect(() => {
+    async function getTasks() {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+      try {
+        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}/tasks`, options)
+        let jsonResponse = await response.json()
+        setTasksList(jsonResponse.tasks)
+        console.log(jsonResponse.tasks)
+        console.log(tasksList)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getTasks()
+  }, [])
 
   return (
     <View>
@@ -91,7 +114,27 @@ export default function GoalsDetail({ route }) {
             style={{marginVertical:15, paddingHorizontal:15, paddingVertical:10, borderRadius:10, display:'flex', flexDirection:'column', alignItems:'flex-start'}}
             mode='flat'
             elevation='4'>
-              <Button
+              {
+                tasksList.length > 0 ?
+                tasksList.map((task) => 
+                  <Button
+                    key={task.id}
+                    icon='format-list-checks'
+                    onPress={() => {
+                      navigation.navigate('TasksStack', {
+                        screen:'TasksDetail',
+                        initial: false,
+                        params: {taskDetails: task}
+                      })
+                    }}
+                  >
+                    {task.title}
+                  </Button>
+                )
+                :
+                <Text>No linked tasks</Text>
+              }
+              {/*<Button
                 icon='format-list-checks'
                 onPress={() => {
                   navigation.navigate('TasksStack', {
@@ -114,7 +157,7 @@ export default function GoalsDetail({ route }) {
                 }}
               >
                 Module 11 Homework
-              </Button>
+              </Button> */}
           </Surface>
           
           {/* Buttons */}

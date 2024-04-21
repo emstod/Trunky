@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Text, Divider, IconButton, useTheme, Portal, Modal, Card, Button, Surface, Chip, Checkbox } from 'react-native-paper'
@@ -10,10 +10,32 @@ export default function TasksDetail({ route }) {
   const taskDetails = route.params['taskDetails']
   const theme = useTheme()
 
-  const [tasksDetailDeleteVisible, setTasksDetailDeleteVisible] = React.useState(false)
-  const [completed, setCompleted] = React.useState(taskDetails.completed)
+  const [tasksDetailDeleteVisible, setTasksDetailDeleteVisible] = useState(false)
+  const [goalsList, setGoalsList] = useState([])
+  const [completed, setCompleted] = useState(taskDetails.completed)
   const tdShowDelete = () => setTasksDetailDeleteVisible(true)
   const tdHideDelete = () => setTasksDetailDeleteVisible(false)
+
+  // Get the list of linked goals from the backend
+  useEffect(() => {
+    async function getGoals() {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+      try {
+        let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskDetails.id}/goals`, options)
+        let jsonResponse = await response.json()
+        setGoalsList(jsonResponse.goals)
+        console.log(goalsList)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getGoals()
+  }, [])
 
   return (
     <View>
@@ -68,30 +90,26 @@ export default function TasksDetail({ route }) {
             style={{marginVertical:15, paddingHorizontal:15, paddingVertical:10, borderRadius:10, display:'flex', flexDirection:'column', alignItems:'flex-start'}}
             mode='flat'
             elevation='4'>
-              <Button
-                icon='bullseye-arrow'
-                onPress={() => {
-                  navigation.navigate('GoalsStack', {
-                    screen:'GoalsDetail',
-                    initial: false,
-                    params: {goalName: 'Finish homework before Netflix'}
-                  })
-                }}
-              >
-                Finish homework before Netflix
-              </Button>
-              <Button
-                icon='bullseye-arrow'
-                onPress={() => {
-                  navigation.navigate('GoalsStack', {
-                    screen:'GoalsDetail',
-                    initial: false,
-                    params: {goalName: 'Get A\'s this semester'}
-                  })
-                }}
-              >
-                Get A&apos;s this semester
-              </Button>
+              { 
+                goalsList.length > 0 ?
+                goalsList.map((goal) => 
+                  <Button
+                    key={goal.id}
+                    icon='bullseye-arrow'
+                    onPress={() => {
+                      navigation.navigate('GoalsStack', {
+                        screen:'GoalsDetail',
+                        initial: false,
+                        params: {goalDetails: goal}
+                      })
+                    }}
+                  >
+                    {goal.title}
+                  </Button>
+                )
+                :
+                <Text>No linked goals</Text>
+              }
           </Surface>
 
           <Divider style={{marginVertical:15}} />
