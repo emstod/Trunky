@@ -107,13 +107,16 @@ function TaskGroup({listWithHeader: listWithHeader, categoryMode: categoryMode})
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([])
+  const [end, setEnd] = useState(false)
   const [categoryMode, setCategoryMode] = useState(false)
+  const [page, setPage] = useState(0)
 
   const onToggleSwitch = () => setCategoryMode(!categoryMode)
 
   useFocusEffect(
     useCallback(() => {
       async function fetchTasks() {
+        setPage(0)
         let options = {
           method: 'GET',
           headers: {
@@ -121,9 +124,16 @@ export default function Tasks() {
           }
         }
         try {
+          let response = []
           console.log('Loading tasks data from server')
-          const response = await fetch(`http://${BACKEND_IP}:3000/tasks/all/${categoryMode ? 'category' : 'date'}`, options)
-          setTasks(await response.json())
+          if (categoryMode) {
+            response = await fetch(`http://${BACKEND_IP}:3000/tasks/all/category`, options)
+          } else {
+            response = await fetch(`http://${BACKEND_IP}:3000/tasks/all/date/${page}`, options)
+          }
+          const data = await response.json()
+          setTasks(data.tasks)
+          setEnd(data.end)
         } catch(error) {
           console.error(error)
         }
@@ -132,6 +142,33 @@ export default function Tasks() {
       return () => {}
     }, [categoryMode])
   )
+
+  useEffect(() => {
+    async function fetchTasks() {
+      let options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+      try {
+        let response = []
+        console.log('Loading tasks data from server')
+        if (categoryMode) {
+          response = await fetch(`http://${BACKEND_IP}:3000/tasks/all/category`, options)
+        } else {
+          response = await fetch(`http://${BACKEND_IP}:3000/tasks/all/date/${page}`, options)
+        }
+        const data = await response.json()
+        setTasks(data.tasks)
+        setEnd(data.end)
+      } catch(error) {
+        console.error(error)
+      }
+    }
+    fetchTasks()
+    return () => {}
+  }, [page])
 
   const navigation = useNavigation()
   return (
@@ -153,9 +190,22 @@ export default function Tasks() {
         }}
       />
 
-      <View style={{display:'flex', flexDirection:'row', alignItems:'center', marginHorizontal:10, marginTop:5}}>
-        <Text variant='labelLarge'>Category View</Text>
-        <Switch value={categoryMode} onValueChange={onToggleSwitch} />
+      <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginHorizontal:5, marginTop:5}}>
+        <Button
+          icon='arrow-up'
+          mode='text'
+          onPress={() => {
+            setPage(page + 1)
+            console.log(page)
+          }}
+          disabled={end}
+        >
+          Show more
+        </Button>
+        <View style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
+          <Text variant='labelLarge'>Category View</Text>
+          <Switch value={categoryMode} onValueChange={onToggleSwitch} />
+        </View>
       </View>
 
       <ScrollView>
