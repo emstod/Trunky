@@ -19,7 +19,13 @@ export function TaskSingle({task, categoryMode}) {
       style={{marginBottom:10, padding:10, flexDirection:'row', justifyContent:'space-between', alignItems:'center', borderRadius:10, maxWidth:'100%'}}
       mode='flat'
       elevation='4'
-      onPress={() => navigation.navigate('TasksDetail')}>
+      onPress={() => {
+        navigation.navigate('TasksStack', {
+          screen:'TasksDetail',
+          initial: false,
+          params: {taskId: task.id}
+        })
+      }}>
         <Checkbox
           status={completed ? 'checked' : 'unchecked'}
           onPress={async () => {
@@ -42,8 +48,10 @@ export function TaskSingle({task, categoryMode}) {
             try {
               let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${payloadObject.id}`, options)
               let jsonResponse = await response.json()
-              task.completed = !task.completed
-              setCompleted(task.completed)
+              if(jsonResponse.message == 'Success') {
+                task.completed = !task.completed
+                setCompleted(task.completed)
+              }
             } catch(error) {
               console.error(error)
             }
@@ -53,7 +61,13 @@ export function TaskSingle({task, categoryMode}) {
           <Button
             mode='text'
             textColor={theme.colors.secondary}
-            onPress={()=>navigation.navigate('TasksDetail', {taskDetails: task})}
+            onPress={() => {
+              navigation.navigate('TasksStack', {
+                screen:'TasksDetail',
+                initial: false,
+                params: {taskId: task.id}
+              })
+            }}
           >
             {task.title}
           </Button>
@@ -108,7 +122,7 @@ export default function Tasks() {
         }
         try {
           console.log('Loading tasks data from server')
-          const response = await fetch(`http://${BACKEND_IP}:3000/tasks/${categoryMode ? 'category' : 'date'}`, options)
+          const response = await fetch(`http://${BACKEND_IP}:3000/tasks/all/${categoryMode ? 'category' : 'date'}`, options)
           setTasks(await response.json())
         } catch(error) {
           console.error(error)

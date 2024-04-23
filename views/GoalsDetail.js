@@ -7,12 +7,32 @@ import { BACKEND_IP } from '@env'
 
 export default function GoalsDetail({ route }) {
   const navigation = useNavigation()
-  const goalDetails = route.params['goalDetails']
+  const goalId = route.params.goalId
   const theme = useTheme()
+  const [goalDetails, setGoalDetails] = useState({})
+
+  // Get the goal details from the data source
+  useEffect(() => {
+    async function getGoalSingle() {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+      try {
+        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalId}`, options)
+        let jsonResponse = await response.json()
+        setGoalDetails(jsonResponse.goal)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getGoalSingle()
+  }, [goalId])
 
   const [goalsDetailDeleteVisible, setGoalsDetailDeleteVisible] = useState(false)
   const [tasksList, setTasksList] = useState([])
-  const [completed, setCompleted] = useState(goalDetails.completed)
   const showDelete = () => setGoalsDetailDeleteVisible(true)
   const hideDelete = () => setGoalsDetailDeleteVisible(false)
 
@@ -26,11 +46,9 @@ export default function GoalsDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}/tasks`, options)
+        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalId}/tasks`, options)
         let jsonResponse = await response.json()
         setTasksList(jsonResponse.tasks)
-        console.log(jsonResponse.tasks)
-        console.log(tasksList)
       } catch (error) {
         console.error(error)
       }
@@ -51,7 +69,7 @@ export default function GoalsDetail({ route }) {
                 size={10}
                 onPress={async () => {
                   let today = new Date()
-                  let newCompleted = completed + 1
+                  let newCompleted = goalDetails.completed + 1
                   let options = {
                     method: 'PUT',
                     headers: {
@@ -62,8 +80,11 @@ export default function GoalsDetail({ route }) {
                   try {
                     let response = await fetch(`http://${BACKEND_IP}:3000/goalcomplete/${goalDetails.id}/${today.toDateString()}`, options)
                     let jsonResponse = await response.json()
-                    goalDetails.completed++
-                    setCompleted(goalDetails.completed)
+                    if (jsonResponse.message == "Success") {
+                      const goalDetailsTmp = {...goalDetails}
+                      goalDetailsTmp.completed++
+                      setGoalDetails(goalDetailsTmp)
+                    }
                   } catch(error) {
                     console.error(error)
                   }
@@ -75,10 +96,10 @@ export default function GoalsDetail({ route }) {
                 size={10}
                 onPress={async () => {
                   let today = new Date()
-                  if (completed == 0) {
+                  if (goalDetails.completed == 0) {
                     return
                   }
-                  let newCompleted = completed - 1
+                  let newCompleted = goalDetails.completed - 1
                   let options = {
                     method: 'PUT',
                     headers: {
@@ -88,8 +109,12 @@ export default function GoalsDetail({ route }) {
                   }
                   try {
                     let response = await fetch(`http://${BACKEND_IP}:3000/goalcomplete/${goalDetails.id}/${today.toDateString()}`, options)
-                    goalDetails.completed--
-                    setCompleted(goalDetails.completed)
+                    let jsonResponse = await response.json()
+                    if (jsonResponse.message == "Success") {
+                      const goalDetailsTmp = {...goalDetails}
+                      goalDetailsTmp.completed--
+                      setGoalDetails(goalDetailsTmp)
+                    }
                   } catch(error) {
                     console.error(error)
                   }
@@ -124,7 +149,7 @@ export default function GoalsDetail({ route }) {
                       navigation.navigate('TasksStack', {
                         screen:'TasksDetail',
                         initial: false,
-                        params: {taskDetails: task}
+                        params: {taskId: task.id}
                       })
                     }}
                   >
@@ -134,30 +159,6 @@ export default function GoalsDetail({ route }) {
                 :
                 <Text>No linked tasks</Text>
               }
-              {/*<Button
-                icon='format-list-checks'
-                onPress={() => {
-                  navigation.navigate('TasksStack', {
-                    screen:'TasksDetail',
-                    initial: false,
-                    params: {taskName: 'Email professor about extra credit'}
-                  })
-                }}
-              >
-                Email professor about extra credit
-              </Button>
-              <Button
-                icon='format-list-checks'
-                onPress={() => {
-                  navigation.navigate('TasksStack', {
-                    screen:'TasksDetail',
-                    initial: false,
-                    params: {taskName: 'Module 11 Homework'}
-                  })
-                }}
-              >
-                Module 11 Homework
-              </Button> */}
           </Surface>
           
           {/* Buttons */}
@@ -172,7 +173,7 @@ export default function GoalsDetail({ route }) {
               icon='pencil'
               mode='outlined'
               size={20}
-              onPress={() => navigation.navigate('GoalsEdit', {goalDetails:goalDetails})}
+              onPress={() => navigation.navigate('GoalsEdit', {goalId:goal.id})}
             />
           </View>
 

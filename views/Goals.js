@@ -5,7 +5,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { BACKEND_IP } from '@env'
 
-function GoalSingle({goal}) {
+export function GoalSingle({goal}) {
   const navigation = useNavigation()
   const [completed, setCompleted] = React.useState(goal.completed)
 
@@ -34,8 +34,10 @@ function GoalSingle({goal}) {
               try {
                 let response = await fetch(`http://${BACKEND_IP}:3000/goalcomplete/${goal.id}/${today.toDateString()}`, options)
                 let jsonResponse = await response.json()
-                goal.completed++
-                setCompleted(jsonResponse.newCompleted)
+                if(jsonResponse.message == 'Success') {
+                  goal.completed++
+                  setCompleted(jsonResponse.newCompleted)
+                }
               } catch(error) {
                 console.error(error)
               }
@@ -50,7 +52,16 @@ function GoalSingle({goal}) {
             icon='dots-horizontal'
             mode="contained-tonal"
             size={20}
-            onPress={() => navigation.navigate('GoalsDetail', {goalDetails:goal})}
+            onPress={() => {
+              navigation.navigate('GoalsStack', {
+                screen:'GoalsDetail',
+                initial: false,
+                params: {goalId: goal.id}
+              })
+            }}
+            // onPress={() => {
+            //   navigation.navigate('GoalsDetail', {goalId:goal.id})}
+            // }
           />
           <IconButton 
             icon="pencil"

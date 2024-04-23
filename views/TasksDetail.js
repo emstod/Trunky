@@ -7,12 +7,32 @@ import { BACKEND_IP } from '@env'
 
 export default function TasksDetail({ route }) {
   const navigation = useNavigation()
-  const taskDetails = route.params['taskDetails']
+  const taskId = route.params.taskId
   const theme = useTheme()
+  const [taskDetails, setTaskDetails] = useState({})
+
+  // Get the goal details from the data source
+  useEffect(() => {
+    async function getTaskSingle() {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+      try {
+        let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskId}`, options)
+        let jsonResponse = await response.json()
+        setTaskDetails(jsonResponse.task)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    getTaskSingle()
+  }, [taskId, taskDetails])
 
   const [tasksDetailDeleteVisible, setTasksDetailDeleteVisible] = useState(false)
   const [goalsList, setGoalsList] = useState([])
-  const [completed, setCompleted] = useState(taskDetails.completed)
   const tdShowDelete = () => setTasksDetailDeleteVisible(true)
   const tdHideDelete = () => setTasksDetailDeleteVisible(false)
 
@@ -26,10 +46,9 @@ export default function TasksDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskDetails.id}/goals`, options)
+        let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskId}/goals`, options)
         let jsonResponse = await response.json()
         setGoalsList(jsonResponse.goals)
-        console.log(goalsList)
       } catch (error) {
         console.error(error)
       }
@@ -43,10 +62,10 @@ export default function TasksDetail({ route }) {
         <View style={{paddingHorizontal:15, paddingTop:75, paddingBottom:20}}>
         
           <Text variant='headlineLarge'>{taskDetails.title}</Text>
-          <Text variant='labelLarge' style={{paddingVertical:8}}>{taskDetails.date.slice(4, 10)}</Text>
+          <Text variant='labelLarge' style={{paddingVertical:8}}>{taskDetails.date/*.slice(4, 10)*/}</Text>
           <View style={{display:'flex', flexDirection:'row', alignItems:'center', alignContent:'flex-start', marginHorizontal:-8}}>
             <Checkbox
-              status={completed ? 'checked' : 'unchecked'}
+              status={taskDetails.completed ? 'checked' : 'unchecked'}
               style={{marginLeft:-5, paddingLeft:-5}}
               onPress={async () => {
                 let payloadObject = {
@@ -68,8 +87,11 @@ export default function TasksDetail({ route }) {
                 try {
                   let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${payloadObject.id}`, options)
                   let jsonResponse = await response.json()
-                  taskDetails.completed = !taskDetails.completed
-                  setCompleted(taskDetails.completed)
+                  if (jsonResponse.message == "Success") {
+                    const taskDetailsTmp = {...taskDetails}
+                    taskDetails.completed = !taskDetails.completed
+                    setTaskDetails(taskDetailsTmp)
+                  }
                 } catch(error) {
                   console.error(error)
                 }
@@ -100,7 +122,7 @@ export default function TasksDetail({ route }) {
                       navigation.navigate('GoalsStack', {
                         screen:'GoalsDetail',
                         initial: false,
-                        params: {goalDetails: goal}
+                        params: {goalId: goal.id}
                       })
                     }}
                   >
@@ -145,7 +167,6 @@ export default function TasksDetail({ route }) {
                     mode='contained'
                     buttonColor={theme.colors.error}
                     onPress={async () => {
-                      console.log('calling the right function')
                       let options = {
                         method: 'DELETE',
                         headers: {
@@ -154,7 +175,6 @@ export default function TasksDetail({ route }) {
                       }
                       try {
                         let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskDetails.id}`, options)
-                        console.log(await response.json())
                         navigation.navigate('Tasks')
                       } catch(error) {
                         console.error(error)
