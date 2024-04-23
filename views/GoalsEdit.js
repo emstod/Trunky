@@ -2,22 +2,23 @@ import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Card, Text, IconButton, useTheme, TextInput, Portal, Modal, RadioButton, List, Checkbox, Button, Divider, Chip, Icon } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
-import * as React from 'react'
+import { useState, useEffect } from 'react'
 import {BACKEND_IP} from '@env'
 
 export default function GoalsEdit({ route }) {
   const navigation = useNavigation()
   const goalDetails = route.params['goalDetails']
   const theme = useTheme()
-  const [title, setTitle] = React.useState(goalDetails.title)
-  const [desc, setDesc] = React.useState(goalDetails.description)
-  const [category, setCategory] = React.useState(goalDetails.category)
-  const [quantity, setQuanitity] = React.useState(goalDetails.quantity)
-  const [frequencyVisible, setFrequencyVisible] = React.useState(false)
-  const [goalsEditDeleteVisible, setGoalsEditDeleteVisible] = React.useState(false)
-  const [tasksVisible, setTasksVisible] = React.useState(false)
-  const [frequency, setFrequency] = React.useState(goalDetails.frequency)
-  const [taskList, setTaskList] = React.useState([])
+  const [title, setTitle] = useState(goalDetails.title)
+  const [desc, setDesc] = useState(goalDetails.description)
+  const [category, setCategory] = useState(goalDetails.category)
+  const [quantity, setQuanitity] = useState(goalDetails.quantity)
+  const [frequencyVisible, setFrequencyVisible] = useState(false)
+  const [goalsEditDeleteVisible, setGoalsEditDeleteVisible] = useState(false)
+  const [tasksVisible, setTasksVisible] = useState(false)
+  const [frequency, setFrequency] = useState(goalDetails.frequency)
+  const [tasksList, setTasksList] = useState([])
+  const [allTasks, setAllTasks] = useState([])
 
   const showFrequency = () => setFrequencyVisible(true)
   const hideFrequency = () => setFrequencyVisible(false)
@@ -25,6 +26,30 @@ export default function GoalsEdit({ route }) {
   const hideDelete = () => setGoalsEditDeleteVisible(false)
   const showTasks = () => setTasksVisible(true)
   const hideTasks = () => setTasksVisible(false)
+
+   // Get the list of linked tasks from the backend
+  useEffect(() => {
+    async function getTasks() {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+      try {
+        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}/tasks`, options)
+        let jsonResponse = await response.json()
+        setTasksList(jsonResponse.tasks)
+        console.log(jsonResponse.tasks)
+        console.log(tasksList)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    if (goalDetails.id) {
+      getTasks()
+    }
+  }, [])
 
   return (
     <View>
@@ -140,144 +165,79 @@ export default function GoalsEdit({ route }) {
           <Divider style={{marginTop:15}} />
 
           {/* Tasks */}
-          <List.Item
-            title='Set screen time rules'
-            left={() => <List.Icon icon='format-list-checks' />}
-            right={() => <IconButton icon='minus' style={{margin:0}} onPress={() => {}}/>}
-            style={{marginVertical:-5}}
-          />
-          <List.Item
-            title='Module 11 homework'
-            left={() => <List.Icon icon='format-list-checks' />}
-            right={() => <IconButton icon='minus' style={{margin:0}} onPress={() => {}}/>}
-            style={{marginVertical:-5}}
-          />
+          {
+            tasksList.map((task) =>
+              <List.Item
+                key={task.id}
+                title={task.title}
+                left={() => <List.Icon icon='bullseye-arrow'/>}
+                right={() => <IconButton
+                  icon='minus'
+                  style={{margin:0}}
+                  onPress={() => {
+                    let tempTasksList = []
+                    for (let item of tasksList) {
+                      if (item.id != task.id) tempTasksList.push(item)
+                    }
+                    setGoalsList(tempTasksList)
+                  }}
+                />}
+                style={{marginVertical:-5}}
+              />
+            )
+          }
           <List.Item
             title='Add task'
             left={() => <List.Icon icon='plus'/>}
-            onPress={showTasks}
+            onPress={async () => {
+              const options = {
+                method: 'GET',
+                'Content-Type': 'application/json'
+              }
+              const response = await fetch(`http://${BACKEND_IP}:3000/tasks/list`)
+              const responseJson = await response.json()
+              setAllTasks(responseJson.tasks)
+              showTasks()
+            }}
           />
 
           {/* Tasks modal */}
           <Portal>
             <Modal visible={tasksVisible} onDismiss={hideTasks} dismissable={false} style={{marginHorizontal:15}}>
               <Card>
-              <Card.Content>
-                  <List.Accordion title='School'>
-                    <List.Item
-                      title='Module 11 homework'
-                      left={() => 
-                        <Checkbox
+                <Card.Content>
+                  {
+                    allTasks.length > 0 ?
+                    allTasks.map((task) => 
+                      <List.Item
+                        key={task.id}
+                        title={task.title}
+                        left={() => <Checkbox
                           status={
-                            taskList.includes('Module 11 homework') ? true : false
+                            // Check whether this goal is already linked
+                            tasksList.some((e) => e.title==task.title) ? 'checked' : 'unchecked'
                           }
                           onPress={() => {
-                            if (taskList.includes('Module 11 homework')) {
-                              tempList = taskList
-                              index = tempList.indexOf('Module 11 homework')
-                              tempList.splice(index, 1)
-                              setTaskList(tempList)
+                            // If the goal is already linked, remove it from goalsList
+                            if (tasksList.some((e) => e.title==task.title)) {
+                              const tmpTasksList = []
+                              for (item of tasksList) {
+                                if (item.id != task.id) tmpTasksList.push(item)
+                              }
+                              setTasksList(tmpTasksList)
                             } else {
-                              setTaskList(taskList.concat(['Module 11 homework']))
+                              // If the goal isn't already linked, add it to goalsList
+                              const tmpTasksList = [...tasksList]
+                              tmpTasksList.push(task)
+                              setTasksList(tmpTasksList)
                             }
                           }}
-                        />
-                      }
-                      style={{marginVertical:-8}}
-                    />
-                    <List.Item
-                      title='English essay'
-                      left={() => 
-                        <Checkbox
-                          status={
-                            taskList.includes('English essay') ? true : false
-                          }
-                          onPress={() => {
-                            if (taskList.includes('English essay')) {
-                              index = taskList.indexOf('English essay')
-                              taskList.splice(index, 1)
-                            }
-                          }}
-                        />
-                      }
-                      style={{marginVertical:-8}}
-                    />
-                  </List.Accordion>
-
-                  <List.Accordion title='Work'>
-                    <List.Item
-                      title='Finish reports for Q3'
-                      left={() => 
-                        <Checkbox
-                          status={
-                            taskList.includes('Finish reports for Q3') ? true : false
-                          }
-                          onPress={() => {
-                            if (taskList.includes('Finish reports for Q3')) {
-                              index = taskList.indexOf('Finish reports for Q3')
-                              taskList.splice(index, 1)
-                            }
-                          }}
-                        />
-                      }
-                      style={{marginVertical:-8}}
-                    />
-                    <List.Item
-                      title='Create meeting agenda'
-                      left={() => 
-                        <Checkbox
-                          status={
-                            taskList.includes('Create meeting agenda') ? true : false
-                          }
-                          onPress={() => {
-                            if (taskList.includes('Create meeting agenda')) {
-                              index = taskList.indexOf('Create meeting agenda')
-                              taskList.splice(index, 1)
-                            }
-                          }}
-                        />
-                      }
-                      style={{marginVertical:-8}}
-                    />
-                  </List.Accordion>
-
-                  <List.Accordion title='Social'>
-                    <List.Item
-                      title='Text Amy about lunch on Friday'
-                      left={() => 
-                        <Checkbox
-                          status={
-                            taskList.includes('Text Amy about lunch on Friday') ? true : false
-                          }
-                          onPress={() => {
-                            if (taskList.includes('Text Amy about lunch on Friday')) {
-                              index = taskList.indexOf('Text Amy about lunch on Friday')
-                              taskList.splice(index, 1)
-                            }
-                          }}
-                        />
-                      }
-                      style={{marginVertical:-8}}
-                    />
-                    <List.Item
-                      title='Visit Grandma'
-                      left={() => 
-                        <Checkbox
-                          status={
-                            taskList.includes('Visit Grandma') ? true : false
-                          }
-                          onPress={() => {
-                            if (taskList.includes('Visit Grandma')) {
-                              index = taskList.indexOf('Visit Grandma')
-                              taskList.splice(index, 1)
-                            }
-                          }}
-                        />
-                      }
-                      style={{marginVertical:-8}}
-                    />
-                  </List.Accordion>
-                  
+                        />}
+                      />
+                    )
+                    :
+                    <Text>No tasks yet!</Text>
+                  }
                 </Card.Content>
                 <Card.Actions>
                   <IconButton
@@ -326,8 +286,23 @@ export default function GoalsEdit({ route }) {
                     let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}`, options)
                     let success = await response.json()
                     console.log(success)
-                    navigation.navigate('Goals')
                   } catch(error) {
+                    console.error(error)
+                    return
+                  }
+
+                  // Update linked tasks
+                  let taskIds = []
+                  for (let task of tasksList) {
+                    taskIds.push(task.id)
+                  }
+                  options.body = JSON.stringify({ taskIds: taskIds })
+                  try {
+                    let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}/tasks`, options)
+                    let success = await response.json()
+                    console.log(success)
+                    navigation.navigate('Goals')
+                  } catch (error) {
                     console.error(error)
                   }
                 } else {
@@ -351,12 +326,29 @@ export default function GoalsEdit({ route }) {
                     // Home IP address
                     let response = await fetch(`http://${BACKEND_IP}:3000/goals`, options)
                     let success = await response.json()
+                    newId = success.id
                     console.log(success)
-                    navigation.navigate('Goals')
                   } catch(error) {
                     console.error(error)
+                    return
                   }
-                }
+
+                  // Update linked goals
+                  let taskIds = []
+                  for (let task of tasksList) {
+                    taskIds.push(task.id)
+                  }
+                  options.body = JSON.stringify({ taskIds: taskIds })
+                  options.method= 'PUT'
+                  try {
+                    let response = await fetch(`http://${BACKEND_IP}:3000/goals/${newId}/tasks`, options)
+                    let success = await response.json()
+                    console.log(success)
+                    navigation.navigate('Goals')
+                  } catch (error) {
+                    console.error(error)
+                  }
+                } // else
                 
               }}
             />

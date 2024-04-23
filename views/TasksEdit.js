@@ -17,7 +17,6 @@ export default function TasksEdit({ route }) {
   const [tasksEditDeleteVisible, setTasksEditDeleteVisible] = useState(false)
   const [goalsVisible, setGoalsVisible] = useState(false)
   const [goalsList, setGoalsList] = useState([])
-  const [checked, setChecked] = useState('')
   const [allGoals, setAllGoals] = useState([])
 
   const showDelete = () => setTasksEditDeleteVisible(true)
@@ -119,7 +118,6 @@ export default function TasksEdit({ route }) {
             }
             const response = await fetch(`http://${BACKEND_IP}:3000/goals/list`)
             const responseJson = await response.json()
-            console.log('heres your response')
             setAllGoals(responseJson.goals)
             console.log(allGoals)
             showGoals()
@@ -131,38 +129,38 @@ export default function TasksEdit({ route }) {
             <Modal visible={goalsVisible} onDismiss={hideGoals} style={{marginHorizontal:15}}>
               <Card>
               <Card.Content>
-                  {
-                    allGoals.length > 0 ?
-                      allGoals.map((goal) => 
-                        <List.Item
-                          key={goal.id}
-                          title={goal.title}
-                          left={() => <Checkbox
-                            status={
-                              // Check whether this goal is already linked
-                              goalsList.some((e) => e.title==goal.title) ? 'checked' : 'unchecked'
-                            }
-                            onPress={() => {
-                              // If the goal is already linked, remove it from goalsList
-                              if (goalsList.some((e) => e.title==goal.title)) {
-                                const tmpGoalsList = []
-                                for (item of goalsList) {
-                                  if (item.id != goal.id) tmpGoalsList.push(item)
-                                }
-                                setGoalsList(tmpGoalsList)
-                              } else {
-                                // If the goal isn't already linked, add it to goalsList
-                                const tmpGoalsList = [...goalsList]
-                                tmpGoalsList.push(goal)
-                                setGoalsList(tmpGoalsList)
+                {
+                  allGoals.length > 0 ?
+                    allGoals.map((goal) => 
+                      <List.Item
+                        key={goal.id}
+                        title={goal.title}
+                        left={() => <Checkbox
+                          status={
+                            // Check whether this goal is already linked
+                            goalsList.some((e) => e.title==goal.title) ? 'checked' : 'unchecked'
+                          }
+                          onPress={() => {
+                            // If the goal is already linked, remove it from goalsList
+                            if (goalsList.some((e) => e.title==goal.title)) {
+                              const tmpGoalsList = []
+                              for (item of goalsList) {
+                                if (item.id != goal.id) tmpGoalsList.push(item)
                               }
-                            }}
-                          />}
-                        />
-                      )
+                              setGoalsList(tmpGoalsList)
+                            } else {
+                              // If the goal isn't already linked, add it to goalsList
+                              const tmpGoalsList = [...goalsList]
+                              tmpGoalsList.push(goal)
+                              setGoalsList(tmpGoalsList)
+                            }
+                          }}
+                        />}
+                      />
+                    )
                     :
                     <Text>No goals yet!</Text>
-                  }                  
+                  }
                 </Card.Content>
                 <Card.Actions>
                   <IconButton
