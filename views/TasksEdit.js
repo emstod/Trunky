@@ -24,6 +24,8 @@ export default function TasksEdit({ route }) {
   const showGoals = () => setGoalsVisible(true)
   const hideGoals = () => setGoalsVisible(false)
 
+  console.log(title ? true : false, date, category ? true : false)
+
   // Get the list of linked goals from the backend
   useEffect(() => {
     async function getGoals() {
@@ -49,7 +51,7 @@ export default function TasksEdit({ route }) {
   return (
     <View>
       <ScrollView>
-        <View style={{paddingHorizontal:15, paddingTop:75, paddingBottom:20}}>
+        <View style={{paddingHorizontal:15, paddingTop:20, paddingBottom:20}}>
           
           {/* Title */}
           <TextInput
@@ -57,6 +59,7 @@ export default function TasksEdit({ route }) {
             value={title}
             mode='outlined'
             onChangeText={title => setTitle(title)}
+            style={{marginVertical:8}}
           />
 
           <DatePickerInput
@@ -66,7 +69,7 @@ export default function TasksEdit({ route }) {
             onChange={(date) => setDate(date)}
             inputMode='start'
             mode='outlined'
-            style={{marginTop:8}}
+            style={{marginVertical:8}}
           />
           <TextInput
             label='Description'
@@ -126,9 +129,9 @@ export default function TasksEdit({ route }) {
 
           {/* Goals modal */}
           <Portal>
-            <Modal visible={goalsVisible} onDismiss={hideGoals} style={{marginHorizontal:15}}>
-              <Card>
-              <Card.Content>
+            <Modal visible={goalsVisible} onDismiss={hideGoals} dismissable={false} style={{marginHorizontal:15}}>
+              <Surface style={{borderRadius:15, padding:20, display:'flex', gap:10}}>
+                <ScrollView style={{maxHeight:500}}>
                 {
                   allGoals.length > 0 ?
                     allGoals.map((goal) => 
@@ -161,22 +164,24 @@ export default function TasksEdit({ route }) {
                     :
                     <Text>No goals yet!</Text>
                   }
-                </Card.Content>
-                <Card.Actions>
+                </ScrollView>
+                <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end'}}>
                   <IconButton
                     icon='check'
                     mode='none'
                     onPress={hideGoals}
                   />
-                </Card.Actions>
-              </Card>
+                </View>
+              </Surface>
             </Modal>
           </Portal>
 
           <Divider style={{marginTop:15}} />
 
           {/* Buttons */}
-          <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end', marginTop:30}}>
+          <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end', alignItems:'center', marginTop:30}}>
+          
+          {/* Show the delete button only if this is an existing task */}
           { 
             taskDetails.id ?
               <IconButton
@@ -187,10 +192,10 @@ export default function TasksEdit({ route }) {
               /> : <></>
           }
             
-            <IconButton
-              icon='check-bold'
+            {/* Save button */}
+            <Button
               mode='contained'
-              size={25}
+              disabled={!title || !date }
               onPress={async () => {
                 // If this is an update, do a PUT and include the ID
                 if (taskDetails.id) {
@@ -200,7 +205,7 @@ export default function TasksEdit({ route }) {
                     date: date.toDateString(),
                     description: desc,
                     completed: taskDetails.completed,
-                    category: category
+                    category: category ? category : 'None'
                   }
                   let options = {
                     method: 'PUT',
@@ -240,7 +245,7 @@ export default function TasksEdit({ route }) {
                     date: date.toDateString(),
                     description: desc,
                     completed: taskDetails.completed,
-                    category: category
+                    category: category ? category : 'None'
                   }
                   let options = {
                     method: 'POST',
@@ -277,7 +282,9 @@ export default function TasksEdit({ route }) {
                   }
                 }
               }}
-            />
+            >
+              Save
+            </Button>
           </View>
 
           {/* Delete confirmation modal */}

@@ -67,8 +67,8 @@ export default function Dashboard() {
 
   return (
     <View>
-      <ScrollView style={{marginTop:50}}>
-        <Text variant='displaySmall' style={{margin:15}}>Hi, Milly</Text>
+      <ScrollView>
+        <Text variant='displaySmall' style={{marginHorizontal:15, marginBottom:15, marginTop:25}}>Hi, Milly</Text>
         <Card style={{marginHorizontal:15, marginVertical:7}}>
           <Card.Content>
             <Text variant="bodyMedium">{quote}</Text>
@@ -101,7 +101,7 @@ export default function Dashboard() {
             }
           </Card.Content>
         </Card>
-        <Card style={{marginHorizontal:15, marginVertical:7}} onPress={() => navigation.navigate('GoalsStack')}>
+        <Card style={{marginHorizontal:15, marginTop:7, marginBottom:20}} onPress={() => navigation.navigate('GoalsStack')}>
           <Card.Title title='Daily Goals' titleVariant='labelLarge' />
           <Card.Content>
             {

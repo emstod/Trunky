@@ -59,7 +59,7 @@ export default function GoalsDetail({ route }) {
   return (
     <View>
       <ScrollView>
-        <View style={{paddingHorizontal:15, paddingTop:75, paddingBottom:20}}>
+        <View style={{paddingHorizontal:15, paddingTop:20, paddingBottom:20}}>
           <Text variant='headlineLarge' style={{flexShrink:1, flexBasis:'80%'}}>{goalDetails.title}</Text>
           <View style={{display:'flex', flexDirection:'row', gap:15, alignItems:'center', marginVertical:8}}>
             <View style={{display:'flex', flexDirection:'row'}}>
@@ -160,21 +160,22 @@ export default function GoalsDetail({ route }) {
                 <Text>No linked tasks</Text>
               }
           </Surface>
+
+          <Divider marginVertical={15} />
           
           {/* Buttons */}
-          <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end'}}>
+          <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end', alignItems:'center'}}>
             <IconButton
               icon='delete'
               mode='outlined'
-              size={20}
+              size={25}
               onPress={showDelete}
             />
-            <IconButton
+            <Button
               icon='pencil'
               mode='outlined'
-              size={20}
               onPress={() => navigation.navigate('GoalsEdit', {goalId:goal.id})}
-            />
+            >Edit Goal</Button>
           </View>
 
           {/* Delete confirmation modal */}

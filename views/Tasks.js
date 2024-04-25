@@ -6,7 +6,6 @@ import { BACKEND_IP } from '@env'
 import { useEffect, useState, useCallback } from 'react'
 
 export function TaskSingle({task, categoryMode}) {
-  const theme = useTheme()
   const navigation = useNavigation()
   const [completed, setCompleted] = useState(task.completed)
 
@@ -29,6 +28,11 @@ export function TaskSingle({task, categoryMode}) {
         <Checkbox
           status={completed ? 'checked' : 'unchecked'}
           onPress={async () => {
+            // Set completed or not completed
+            task.completed = !task.completed
+            setCompleted(task.completed)
+
+            // Create an object to do the update with
             let payloadObject = {
               id: task.id,
               title: task.title,
@@ -37,7 +41,6 @@ export function TaskSingle({task, categoryMode}) {
               completed: task.completed,
               category: task.category
             }
-            payloadObject.completed = !payloadObject.completed
             let options = {
               method: 'PUT',
               headers: {
@@ -45,10 +48,13 @@ export function TaskSingle({task, categoryMode}) {
               },
               body: JSON.stringify(payloadObject)
             }
+            // Make the API update call
             try {
               let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${payloadObject.id}`, options)
               let jsonResponse = await response.json()
-              if(jsonResponse.message == 'Success') {
+
+              // Revert if the API call wasn't successful
+              if(jsonResponse.message != 'Success') {
                 task.completed = !task.completed
                 setCompleted(task.completed)
               }
@@ -60,7 +66,6 @@ export function TaskSingle({task, categoryMode}) {
         <View style={{flexBasis:'90%', flexShrink:1, alignItems:'flex-start', flexDirection:'column'}}>
           <Button
             mode='text'
-            textColor={theme.colors.secondary}
             onPress={() => {
               navigation.navigate('TasksStack', {
                 screen:'TasksDetail',
@@ -112,6 +117,8 @@ export default function Tasks() {
   const [page, setPage] = useState(0)
 
   const onToggleSwitch = () => setCategoryMode(!categoryMode)
+
+  const theme = useTheme()
 
   useFocusEffect(
     useCallback(() => {
@@ -175,7 +182,7 @@ export default function Tasks() {
     <View style={{height:'100%'}}>
       <FAB
         icon="plus"
-        style={{position:'absolute', margin:16, right:0, bottom:0, zIndex:1}}
+        style={{position:'absolute', margin:16, right:0, bottom:0, zIndex:1, backgroundColor:theme.colors.tasksContainer}}
         onPress={() => {
           navigation.navigate('TasksEdit', {
             taskDetails: {

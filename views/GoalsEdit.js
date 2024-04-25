@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
-import { Card, Text, IconButton, useTheme, TextInput, Portal, Modal, RadioButton, List, Checkbox, Button, Divider, Chip, Icon } from 'react-native-paper'
+import { Card, Text, IconButton, useTheme, TextInput, Portal, Modal, RadioButton, List, Checkbox, Button, Divider, Chip, Surface } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
 import { useState, useEffect } from 'react'
 import {BACKEND_IP} from '@env'
@@ -54,7 +54,7 @@ export default function GoalsEdit({ route }) {
   return (
     <View>
       <ScrollView>
-        <View style={{paddingHorizontal:15, paddingTop:75, paddingBottom:20}}>
+        <View style={{paddingHorizontal:15, paddingTop:20, paddingBottom:20}}>
           {/* Title */}
           <TextInput
             label='Title'
@@ -162,7 +162,7 @@ export default function GoalsEdit({ route }) {
             </Modal>
           </Portal>
 
-          <Divider style={{marginTop:15}} />
+          <Divider style={{marginVertical:15}} />
 
           {/* Tasks */}
           {
@@ -179,7 +179,7 @@ export default function GoalsEdit({ route }) {
                     for (let item of tasksList) {
                       if (item.id != task.id) tempTasksList.push(item)
                     }
-                    setGoalsList(tempTasksList)
+                    setTasksList(tempTasksList)
                   }}
                 />}
                 style={{marginVertical:-5}}
@@ -204,8 +204,8 @@ export default function GoalsEdit({ route }) {
           {/* Tasks modal */}
           <Portal>
             <Modal visible={tasksVisible} onDismiss={hideTasks} dismissable={false} style={{marginHorizontal:15}}>
-              <Card>
-                <Card.Content>
+              <Surface style={{borderRadius:15, padding:20, display:'flex', gap:10}}>
+                  <ScrollView style={{maxHeight:500}}>
                   {
                     allTasks.length > 0 ?
                     allTasks.map((task) => 
@@ -238,32 +238,38 @@ export default function GoalsEdit({ route }) {
                     :
                     <Text>No tasks yet!</Text>
                   }
-                </Card.Content>
-                <Card.Actions>
-                  <IconButton
-                    icon='check'
-                    mode='none'
-                    onPress={hideTasks}
-                  />
-                </Card.Actions>
-              </Card>
+                  </ScrollView>
+                  <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end'}}>
+                    <IconButton
+                      icon='check'
+                      mode='none'
+                      onPress={hideTasks}
+                    />
+                  </View>
+              </Surface>
             </Modal>
           </Portal>
 
           <Divider style={{marginTop:15}} />
 
           {/* Buttons */}
-          <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end', marginTop:30}}>
-            <IconButton
-              icon='delete'
-              mode='outlined'
-              size={25}
-              onPress={showDelete}
-            />
-            <IconButton
-              icon='check-bold'
+          <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end', alignItems:'center', marginTop:30}}>
+            {/* Show the delete button only if this is an existing goal */}
+            {
+              goalDetails.id ?
+              <IconButton
+                icon='delete'
+                mode='outlined'
+                size={25}
+                onPress={showDelete}
+              />
+              :
+              <></>
+            }
+            {/* Save button */}
+            <Button
               mode='contained'
-              size={25}
+              disabled={!title}
               onPress={async () => {
                 // If this is an update, do a PUT and include the ID
                 if (goalDetails.id) {
@@ -273,7 +279,7 @@ export default function GoalsEdit({ route }) {
                     description: desc,
                     frequency: frequency,
                     quantity: quantity,
-                    category: category
+                    category: category ? category : 'None'
                   }
                   let options = {
                     method: 'PUT',
@@ -312,7 +318,7 @@ export default function GoalsEdit({ route }) {
                     description: desc,
                     frequency: frequency,
                     quantity: quantity,
-                    category: category
+                    category: category ? category : 'None'
                   }
                   let options = {
                     method: 'POST',
@@ -349,9 +355,10 @@ export default function GoalsEdit({ route }) {
                     console.error(error)
                   }
                 } // else
-                
               }}
-            />
+            >
+              Save
+            </Button>
           </View>
 
           {/* Delete confirmation modal */}

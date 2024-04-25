@@ -59,7 +59,7 @@ export default function TasksDetail({ route }) {
   return (
     <View>
       <ScrollView>
-        <View style={{paddingHorizontal:15, paddingTop:75, paddingBottom:20}}>
+        <View style={{paddingHorizontal:15, paddingTop:20, paddingBottom:20}}>
         
           <Text variant='headlineLarge'>{taskDetails.title}</Text>
           <Text variant='labelLarge' style={{paddingVertical:8}}>{taskDetails.date/*.slice(4, 10)*/}</Text>
@@ -68,6 +68,10 @@ export default function TasksDetail({ route }) {
               status={taskDetails.completed ? 'checked' : 'unchecked'}
               style={{marginLeft:-5, paddingLeft:-5}}
               onPress={async () => {
+                // Change the status
+                taskDetails.completed = !taskDetails.completed
+
+                // Create an object to send to the API update
                 let payloadObject = {
                   id: taskDetails.id,
                   title: taskDetails.title,
@@ -76,7 +80,6 @@ export default function TasksDetail({ route }) {
                   completed: taskDetails.completed,
                   category: taskDetails.category
                 }
-                payloadObject.completed = !payloadObject.completed
                 let options = {
                   method: 'PUT',
                   headers: {
@@ -87,7 +90,8 @@ export default function TasksDetail({ route }) {
                 try {
                   let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${payloadObject.id}`, options)
                   let jsonResponse = await response.json()
-                  if (jsonResponse.message == "Success") {
+                  // Revert the change if the API call didn't work
+                  if (jsonResponse.message != "Success") {
                     const taskDetailsTmp = {...taskDetails}
                     taskDetails.completed = !taskDetails.completed
                     setTaskDetails(taskDetailsTmp)
@@ -137,19 +141,18 @@ export default function TasksDetail({ route }) {
           <Divider style={{marginVertical:15}} />
           
           {/* Buttons */}
-          <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end'}}>
+          <View style={{display:'flex', flexDirection:'row', justifyContent:'flex-end', alignItems:'center'}}>
             <IconButton
               icon='delete'
               mode='outlined'
-              size={20}
+              size={25}
               onPress={tdShowDelete}
             />
-            <IconButton
+            <Button
               icon='pencil'
               mode='outlined'
-              size={20}
               onPress={() => navigation.navigate('TasksEdit', {taskDetails:taskDetails})}
-            />
+            >Edit Task</Button>
           </View>
 
           {/* Delete confirmation modal */}

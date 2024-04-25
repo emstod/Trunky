@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
-import { Card, IconButton, Surface, List, FAB, Text } from 'react-native-paper'
+import { Card, IconButton, Surface, List, FAB, useTheme } from 'react-native-paper'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { BACKEND_IP } from '@env'
@@ -59,9 +59,6 @@ export function GoalSingle({goal}) {
                 params: {goalId: goal.id}
               })
             }}
-            // onPress={() => {
-            //   navigation.navigate('GoalsDetail', {goalId:goal.id})}
-            // }
           />
           <IconButton 
             icon="pencil"
@@ -93,6 +90,7 @@ function GoalGroup({categoryList}) {
 }
 
 export default function Goals() {
+  const theme = useTheme()
   const [ goals, setGoals ] = React.useState([])
 
   useFocusEffect(
@@ -122,7 +120,7 @@ export default function Goals() {
     <View style={{height:'100%'}}>
       <FAB
         icon="plus"
-        style={{position:'absolute', margin:16, right:0, bottom:0, zIndex:1}}
+        style={{position:'absolute', margin:16, right:0, bottom:0, zIndex:1, backgroundColor:theme.colors.goalsContainer}}
         onPress={() => {
           navigation.navigate('GoalsEdit', {
             goalDetails: {
