@@ -14,6 +14,7 @@ export default function TasksEdit({ route }) {
   const [desc, setDesc] = useState(taskDetails.description)
   const [date, setDate] = useState(taskDetails.date ? new Date(taskDetails.date) : '')
   const [category, setCategory] = useState(taskDetails.category)
+  const [completed, setCompleted] = useState(taskDetails.completed)
   const [tasksEditDeleteVisible, setTasksEditDeleteVisible] = useState(false)
   const [goalsVisible, setGoalsVisible] = useState(false)
   const [goalsList, setGoalsList] = useState([])
@@ -87,6 +88,18 @@ export default function TasksEdit({ route }) {
             onChangeText={c => setCategory(c)}
             style={{marginVertical:8}}
           />
+
+<View style={{display:'flex', flexDirection:'row', alignItems:'center', alignContent:'flex-start', marginHorizontal:-8, marginTop:10}}>
+            <Checkbox
+              status={completed ? 'checked' : 'unchecked'}
+              style={{marginLeft:-5, paddingLeft:-5}}
+              onPress={() => {
+                setCompleted(!completed)
+              }}
+            />
+            <Text variant='labelLarge'>Completed?</Text>
+          </View>
+
           <Divider style={{marginVertical:15}} />          
 
           {/* Goals */}
@@ -204,7 +217,7 @@ export default function TasksEdit({ route }) {
                     title: title,
                     date: date.toDateString(),
                     description: desc,
-                    completed: taskDetails.completed,
+                    completed: completed,
                     category: category ? category : 'None'
                   }
                   let options = {
@@ -244,7 +257,7 @@ export default function TasksEdit({ route }) {
                     title: title,
                     date: date.toDateString(),
                     description: desc,
-                    completed: taskDetails.completed,
+                    completed: completed,
                     category: category ? category : 'None'
                   }
                   let options = {

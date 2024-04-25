@@ -95,7 +95,6 @@ export default function GoalsDetail({ route }) {
                 mode="outlined"
                 size={10}
                 onPress={async () => {
-                  let today = new Date()
                   if (goalDetails.completed == 0) {
                     return
                   }
@@ -107,8 +106,54 @@ export default function GoalsDetail({ route }) {
                     },
                     body: JSON.stringify({completed: newCompleted})
                   }
+                  
+                  // TODO move to backend
+                  // Calculate the correct date to send based on goal frequency - MOVE TO BACKEND PROBABLY!!!!
+                  let dateToSend = ''
+                  const today = new Date()
+                  switch (goalDetails.frequency) {
+                    case 'daily':
+                      // If the goal is daily, use today's date
+                      dateToSend = today.toDateString()
+                      break
+                    case 'weekly':
+                      // If the goal is weekly, use the date of the previous Sunday
+                      let todayMillis = today.getTime()
+                      let daysFromSunday = 0
+                      // Switch on the day of the week
+                      switch (today.getDay()) {
+                        case 1: // Monday
+                          daysFromSunday = 1
+                          break
+                        case 2:
+                          daysFromSunday = 2
+                          break
+                        case 3:
+                          daysFromSunday = 3
+                          break
+                        case 4:
+                          daysFromSunday = 4
+                          break
+                        case 5:
+                          daysFromSunday = 5
+                          break
+                        case 6:
+                          daysFromSunday = 6
+                          break
+                      }
+                      // Calculate the milliseconds for the previous Sunday and get the date string
+                      const millisPerDay = 24 * 60 * 60 * 1000
+                      const millisToSend = todayMillis - (daysFromSunday * millisPerDay)
+                      dateToSend = new Date(millisToSend).toDateString()
+                      break
+                    case 'monthly':
+                      // Set the date to the first of the month
+                      today.setDate(1)
+                      dateToSend = today.toDateString()
+                  }
+
                   try {
-                    let response = await fetch(`http://${BACKEND_IP}:3000/goalcomplete/${goalDetails.id}/${today.toDateString()}`, options)
+                    let response = await fetch(`http://${BACKEND_IP}:3000/goalcomplete/${goalDetails.id}/${dateToSend}`, options)
                     let jsonResponse = await response.json()
                     if (jsonResponse.message == "Success") {
                       const goalDetailsTmp = {...goalDetails}
@@ -174,7 +219,7 @@ export default function GoalsDetail({ route }) {
             <Button
               icon='pencil'
               mode='outlined'
-              onPress={() => navigation.navigate('GoalsEdit', {goalId:goal.id})}
+              onPress={() => navigation.navigate('GoalsEdit', {goalDetails: goalDetails})}
             >Edit Goal</Button>
           </View>
 

@@ -54,7 +54,7 @@ export function GoalSingle({goal}) {
             size={20}
             onPress={() => {
               navigation.navigate('GoalsStack', {
-                screen:'GoalsDetail',
+                screen: 'GoalsDetail',
                 initial: false,
                 params: {goalId: goal.id}
               })
@@ -64,7 +64,14 @@ export function GoalSingle({goal}) {
             icon="pencil"
             mode="contained-tonal"
             size={20}
-            onPress={() => navigation.navigate('GoalsEdit', {goalDetails:goal})}
+            // onPress={() => navigation.navigate('GoalsStack', 'GoalsEdit', {goalDetails:goal})}
+            onPress={() => {
+              navigation.navigate('GoalsStack', {
+                screen: 'GoalsEdit',
+                initial: false,
+                params: {goalDetails: goal}
+              })
+            }}
           />
         </View>
     </Surface>
