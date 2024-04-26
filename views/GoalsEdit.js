@@ -3,7 +3,7 @@ import { View, ScrollView } from 'react-native'
 import { Card, Text, IconButton, useTheme, TextInput, Portal, Modal, RadioButton, List, Checkbox, Button, Divider, Chip, Surface } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
 import { useState, useEffect } from 'react'
-import {BACKEND_IP} from '@env'
+// import {BACKEND_IP} from '@env'
 
 export default function GoalsEdit({ route }) {
   const navigation = useNavigation()
@@ -37,7 +37,7 @@ export default function GoalsEdit({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}/tasks`, options)
+        let response = await fetch(`http://54.226.7.16/goals/${goalDetails.id}/tasks`, options)
         let jsonResponse = await response.json()
         setTasksList(jsonResponse.tasks)
         console.log(jsonResponse.tasks)
@@ -194,7 +194,7 @@ export default function GoalsEdit({ route }) {
                 method: 'GET',
                 'Content-Type': 'application/json'
               }
-              const response = await fetch(`http://${BACKEND_IP}:3000/tasks?listtype=none`)
+              const response = await fetch(`http://54.226.7.16/tasks?listtype=none`)
               const responseJson = await response.json()
               setAllTasks(responseJson.tasks)
               showTasks()
@@ -289,7 +289,7 @@ export default function GoalsEdit({ route }) {
                     body: JSON.stringify(bodyObject)
                   }
                   try {
-                    let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}`, options)
+                    let response = await fetch(`http://54.226.7.16/goals/${goalDetails.id}`, options)
                     let success = await response.json()
                     console.log(success)
                   } catch(error) {
@@ -304,7 +304,7 @@ export default function GoalsEdit({ route }) {
                   }
                   options.body = JSON.stringify({ taskIds: taskIds })
                   try {
-                    let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}/tasks`, options)
+                    let response = await fetch(`http://54.226.7.16/goals/${goalDetails.id}/tasks`, options)
                     let success = await response.json()
                     console.log(success)
                     navigation.navigate('Goals')
@@ -330,7 +330,7 @@ export default function GoalsEdit({ route }) {
                   try {
                     console.log('creating a goal')
                     // Home IP address
-                    let response = await fetch(`http://${BACKEND_IP}:3000/goals`, options)
+                    let response = await fetch(`http://54.226.7.16/goals`, options)
                     let success = await response.json()
                     newId = success.id
                     console.log(success)
@@ -347,7 +347,7 @@ export default function GoalsEdit({ route }) {
                   options.body = JSON.stringify({ taskIds: taskIds })
                   options.method= 'PUT'
                   try {
-                    let response = await fetch(`http://${BACKEND_IP}:3000/goals/${newId}/tasks`, options)
+                    let response = await fetch(`http://54.226.7.16/goals/${newId}/tasks`, options)
                     let success = await response.json()
                     console.log(success)
                     navigation.navigate('Goals')
@@ -384,7 +384,7 @@ export default function GoalsEdit({ route }) {
                         },
                       }
                       try {
-                        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}`, options)
+                        let response = await fetch(`http://54.226.7.16/goals/${goalDetails.id}`, options)
                         console.log(await response.json())
                         navigation.navigate('Goals')
                       } catch(error) {

@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Text, Chip, IconButton, useTheme, Portal, Modal, Card, Button, Surface, Divider } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
-import { BACKEND_IP } from '@env'
+// import { BACKEND_IP } from '@env'
 
 export default function GoalsDetail({ route }) {
   const navigation = useNavigation()
@@ -21,7 +21,7 @@ export default function GoalsDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalId}`, options)
+        let response = await fetch(`http://54.226.7.16/goals/${goalId}`, options)
         let jsonResponse = await response.json()
         setGoalDetails(jsonResponse.goal)
       } catch (error) {
@@ -46,7 +46,7 @@ export default function GoalsDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalId}/tasks`, options)
+        let response = await fetch(`http://54.226.7.16/goals/${goalId}/tasks`, options)
         let jsonResponse = await response.json()
         setTasksList(jsonResponse.tasks)
       } catch (error) {
@@ -78,7 +78,7 @@ export default function GoalsDetail({ route }) {
                     body: JSON.stringify({completed: newCompleted})
                   }
                   try {
-                    let response = await fetch(`http://${BACKEND_IP}:3000/goalcomplete/${goalDetails.id}/${today.toDateString()}`, options)
+                    let response = await fetch(`http://54.226.7.16/goalcomplete/${goalDetails.id}/${today.toDateString()}`, options)
                     let jsonResponse = await response.json()
                     if (jsonResponse.message == "Success") {
                       const goalDetailsTmp = {...goalDetails}
@@ -108,7 +108,7 @@ export default function GoalsDetail({ route }) {
                   }
                   const today = new Date().toDateString()
                   try {
-                    let response = await fetch(`http://${BACKEND_IP}:3000/goalcomplete/${goalDetails.id}/${today}`, options)
+                    let response = await fetch(`http://54.226.7.16/goalcomplete/${goalDetails.id}/${today}`, options)
                     let jsonResponse = await response.json()
                     if (jsonResponse.message == "Success") {
                       const goalDetailsTmp = {...goalDetails}
@@ -200,7 +200,7 @@ export default function GoalsDetail({ route }) {
                         }
                       }
                       try {
-                        let response = await fetch(`http://${BACKEND_IP}:3000/goals/${goalDetails.id}`, options)
+                        let response = await fetch(`http://54.226.7.16/goals/${goalDetails.id}`, options)
                         navigation.navigate('Goals')
                       } catch(error) {
                         console.error(error)

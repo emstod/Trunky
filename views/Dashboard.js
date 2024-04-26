@@ -3,7 +3,7 @@ import { View, ScrollView } from 'react-native'
 import { Card, Text } from 'react-native-paper'
 import { useNavigation, useFocusEffect, useTheme } from '@react-navigation/native'
 import { useEffect, useState, useCallback } from 'react'
-import { BACKEND_IP } from '@env'
+// import { BACKEND_IP } from '@env'
 import { TaskSingle } from './Tasks'
 import { GoalSingle } from './Goals'
 
@@ -36,7 +36,7 @@ export default function Dashboard() {
         let today = new Date()
         try {
           console.log('Loading tasks data from server')
-          const response = await fetch(`http://${BACKEND_IP}:3000/tasks?listtype=none&date=${today.toDateString()}`, options)
+          const response = await fetch(`http://54.226.7.16/tasks?listtype=none&date=${today.toDateString()}`, options)
           let data = await response.json()
           setTasks(data.tasks)
         } catch(error) {
@@ -52,7 +52,7 @@ export default function Dashboard() {
         }
         try {
           console.log('Loading goals data from server')
-          const response = await fetch(`http://${BACKEND_IP}:3000/goals?listtype=none&frequency=daily`, options)
+          const response = await fetch(`http://54.226.7.16/goals?listtype=none&frequency=daily`, options)
           let data = await response.json()
           setGoals(data)
         } catch(error) {

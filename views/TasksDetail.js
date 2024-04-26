@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Text, Divider, IconButton, useTheme, Portal, Modal, Card, Button, Surface, Chip, Checkbox } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
-import { BACKEND_IP } from '@env'
+// import { BACKEND_IP } from '@env'
 
 export default function TasksDetail({ route }) {
   const navigation = useNavigation()
@@ -21,7 +21,7 @@ export default function TasksDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskId}`, options)
+        let response = await fetch(`http://54.226.7.16/tasks/${taskId}`, options)
         let jsonResponse = await response.json()
         setTaskDetails(jsonResponse.task)
         setCompleted(jsonResponse.task.completed)
@@ -48,7 +48,7 @@ export default function TasksDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskId}/goals?listtype=category`, options)
+        let response = await fetch(`http://54.226.7.16/tasks/${taskId}/goals?listtype=category`, options)
         let jsonResponse = await response.json()
         setGoalsList(jsonResponse.goals)
       } catch (error) {
@@ -91,7 +91,7 @@ export default function TasksDetail({ route }) {
                   body: JSON.stringify(payloadObject)
                 }
                 try {
-                  let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${payloadObject.id}`, options)
+                  let response = await fetch(`http://54.226.7.16/tasks/${payloadObject.id}`, options)
                   let jsonResponse = await response.json()
                   // Revert the change if the API call didn't work
                   if (jsonResponse.message != "Success") {
@@ -181,7 +181,7 @@ export default function TasksDetail({ route }) {
                         },
                       }
                       try {
-                        let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskDetails.id}`, options)
+                        let response = await fetch(`http://54.226.7.16/tasks/${taskDetails.id}`, options)
                         navigation.navigate('Tasks')
                       } catch(error) {
                         console.error(error)

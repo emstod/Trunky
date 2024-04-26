@@ -3,7 +3,7 @@ import { View, ScrollView } from 'react-native'
 import { Card, IconButton, Surface, List, FAB, useTheme } from 'react-native-paper'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import React, { useEffect, useState, useCallback } from 'react'
-import { BACKEND_IP } from '@env'
+// import { BACKEND_IP } from '@env'
 
 export function GoalSingle({goal}) {
   const navigation = useNavigation()
@@ -32,7 +32,7 @@ export function GoalSingle({goal}) {
                 body: JSON.stringify({completed: newCompleted})
               }
               try {
-                let response = await fetch(`http://${BACKEND_IP}:3000/goalcomplete/${goal.id}/${today.toDateString()}`, options)
+                let response = await fetch(`http://54.226.7.16/goalcomplete/${goal.id}/${today.toDateString()}`, options)
                 let jsonResponse = await response.json()
                 if(jsonResponse.message == 'Success') {
                   goal.completed++
@@ -111,7 +111,7 @@ export default function Goals() {
         }
         try {
           console.log('Loading goals data from server')
-          const response = await fetch(`http://${BACKEND_IP}:3000/goals?listtype=category`, options)
+          const response = await fetch(`http://54.226.7.16/goals?listtype=category`, options)
           setGoals(await response.json())
         } catch(error) {
           console.error(error)
