@@ -111,7 +111,7 @@ export default function Goals() {
         }
         try {
           console.log('Loading goals data from server')
-          const response = await fetch(`http://${BACKEND_IP}:3000/goals`, options)
+          const response = await fetch(`http://${BACKEND_IP}:3000/goals?listtype=category`, options)
           setGoals(await response.json())
         } catch(error) {
           console.error(error)

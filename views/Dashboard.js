@@ -36,7 +36,7 @@ export default function Dashboard() {
         let today = new Date()
         try {
           console.log('Loading tasks data from server')
-          const response = await fetch(`http://${BACKEND_IP}:3000/tasks/date/${today.toDateString()}`, options)
+          const response = await fetch(`http://${BACKEND_IP}:3000/tasks?listtype=none&date=${today.toDateString()}`, options)
           let data = await response.json()
           setTasks(data.tasks)
         } catch(error) {
@@ -52,9 +52,9 @@ export default function Dashboard() {
         }
         try {
           console.log('Loading goals data from server')
-          const response = await fetch(`http://${BACKEND_IP}:3000/goals/daily`, options)
+          const response = await fetch(`http://${BACKEND_IP}:3000/goals?listtype=none&frequency=daily`, options)
           let data = await response.json()
-          setGoals(data.goals)
+          setGoals(data)
         } catch(error) {
           console.error(error)
         }

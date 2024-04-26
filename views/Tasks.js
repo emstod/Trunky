@@ -134,9 +134,9 @@ export default function Tasks() {
           let response = []
           console.log('Loading tasks data from server')
           if (categoryMode) {
-            response = await fetch(`http://${BACKEND_IP}:3000/tasks/all/category`, options)
+            response = await fetch(`http://${BACKEND_IP}:3000/tasks?listtype=category`, options)
           } else {
-            response = await fetch(`http://${BACKEND_IP}:3000/tasks/all/date/${page}`, options)
+            response = await fetch(`http://${BACKEND_IP}:3000/tasks?listtype=date&page=${page}}`, options)
           }
           const data = await response.json()
           setTasks(data.tasks)
@@ -162,9 +162,9 @@ export default function Tasks() {
         let response = []
         console.log('Loading tasks data from server')
         if (categoryMode) {
-          response = await fetch(`http://${BACKEND_IP}:3000/tasks/all/category`, options)
+          response = await fetch(`http://${BACKEND_IP}:3000/tasks?listtype=category`, options)
         } else {
-          response = await fetch(`http://${BACKEND_IP}:3000/tasks/all/date/${page}`, options)
+          response = await fetch(`http://${BACKEND_IP}:3000/tasks?listtype=date&page=${page}`, options)
         }
         const data = await response.json()
         setTasks(data.tasks)

@@ -194,7 +194,7 @@ export default function GoalsEdit({ route }) {
                 method: 'GET',
                 'Content-Type': 'application/json'
               }
-              const response = await fetch(`http://${BACKEND_IP}:3000/tasks/list`)
+              const response = await fetch(`http://${BACKEND_IP}:3000/tasks?listtype=none`)
               const responseJson = await response.json()
               setAllTasks(responseJson.tasks)
               showTasks()

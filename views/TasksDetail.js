@@ -11,7 +11,7 @@ export default function TasksDetail({ route }) {
   const theme = useTheme()
   const [taskDetails, setTaskDetails] = useState({})
 
-  // Get the goal details from the data source
+  // Get the task details from the data source
   useEffect(() => {
     async function getTaskSingle() {
       const options = {
@@ -24,17 +24,19 @@ export default function TasksDetail({ route }) {
         let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskId}`, options)
         let jsonResponse = await response.json()
         setTaskDetails(jsonResponse.task)
+        setCompleted(jsonResponse.task.completed)
       } catch (error) {
         console.error(error)
       }
     }
     getTaskSingle()
-  }, [taskId, taskDetails])
+  }, [taskId])
 
   const [tasksDetailDeleteVisible, setTasksDetailDeleteVisible] = useState(false)
   const [goalsList, setGoalsList] = useState([])
   const tdShowDelete = () => setTasksDetailDeleteVisible(true)
   const tdHideDelete = () => setTasksDetailDeleteVisible(false)
+  const [completed, setCompleted] = useState(taskDetails.completed)
 
   // Get the list of linked goals from the backend
   useEffect(() => {
@@ -46,7 +48,7 @@ export default function TasksDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskId}/goals`, options)
+        let response = await fetch(`http://${BACKEND_IP}:3000/tasks/${taskId}/goals?listtype=category`, options)
         let jsonResponse = await response.json()
         setGoalsList(jsonResponse.goals)
       } catch (error) {
@@ -65,10 +67,11 @@ export default function TasksDetail({ route }) {
           <Text variant='labelLarge' style={{paddingVertical:8}}>{taskDetails.date/*.slice(4, 10)*/}</Text>
           <View style={{display:'flex', flexDirection:'row', alignItems:'center', alignContent:'flex-start', marginHorizontal:-8}}>
             <Checkbox
-              status={taskDetails.completed ? 'checked' : 'unchecked'}
+              status={completed ? 'checked' : 'unchecked'}
               style={{marginLeft:-5, paddingLeft:-5}}
               onPress={async () => {
                 // Change the status
+                setCompleted(!completed)
                 taskDetails.completed = !taskDetails.completed
 
                 // Create an object to send to the API update
@@ -94,6 +97,7 @@ export default function TasksDetail({ route }) {
                   if (jsonResponse.message != "Success") {
                     const taskDetailsTmp = {...taskDetails}
                     taskDetails.completed = !taskDetails.completed
+                    setCompleted(!completed)
                     setTaskDetails(taskDetailsTmp)
                   }
                 } catch(error) {
