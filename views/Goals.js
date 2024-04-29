@@ -2,14 +2,15 @@ import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Card, IconButton, Surface, List, FAB, useTheme } from 'react-native-paper'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import React, { useEffect, useState, useCallback } from 'react'
-// import { BACKEND_IP } from '@env'
+import { useEffect, useState, useCallback } from 'react'
 
+// Single goal component
 export function GoalSingle({goal}) {
   const navigation = useNavigation()
-  const [completed, setCompleted] = React.useState(goal.completed)
+  const [completed, setCompleted] = useState(goal.completed)
 
-  React.useEffect(() => {
+  // When goal data changes, set completed
+  useEffect(() => {
     setCompleted(goal.completed)
   }, [goal])
 
@@ -22,6 +23,7 @@ export function GoalSingle({goal}) {
             mode="outlined"
             size={10}
             onPress={async () => {
+              // Increment goal completed
               let today = new Date()
               let newCompleted = completed + 1
               let options = {
@@ -32,9 +34,10 @@ export function GoalSingle({goal}) {
                 body: JSON.stringify({completed: newCompleted})
               }
               try {
-                let response = await fetch(`http://54.226.7.16/goalcomplete/${goal.id}/${today.toDateString()}`, options)
+                let response = await fetch(`https://trunky.site/goalcomplete/${goal.id}/${today.toDateString()}`, options)
                 let jsonResponse = await response.json()
                 if(jsonResponse.message == 'Success') {
+                  // Set completed only AFTER response from server, otherwise we were getting consistency issues
                   goal.completed++
                   setCompleted(jsonResponse.newCompleted)
                 }
@@ -47,6 +50,8 @@ export function GoalSingle({goal}) {
           style={{paddingVertical:0, flexBasis:'70%', flexShrink:1}}
           key={goal.id}
         />
+
+        {/* Details and Edit buttons */}
         <View style={{display:'flex', flexBasis:'30%', flexDirection:'row'}}>
           <IconButton
             icon='dots-horizontal'
@@ -64,7 +69,6 @@ export function GoalSingle({goal}) {
             icon="pencil"
             mode="contained-tonal"
             size={20}
-            // onPress={() => navigation.navigate('GoalsStack', 'GoalsEdit', {goalDetails:goal})}
             onPress={() => {
               navigation.navigate('GoalsStack', {
                 screen: 'GoalsEdit',
@@ -78,6 +82,7 @@ export function GoalSingle({goal}) {
   )
 }
 
+// Group of goals with a header
 function GoalGroup({categoryList}) {
   const goalsList = [...categoryList]
   const category = goalsList.shift()
@@ -98,10 +103,11 @@ function GoalGroup({categoryList}) {
 
 export default function Goals() {
   const theme = useTheme()
-  const [ goals, setGoals ] = React.useState([])
+  const [ goals, setGoals ] = useState([])
 
+  // Reload the goals when this screen is focused; keeps consistency when goals have been edited
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       async function fetchGoals() {
         let options = {
           method: 'GET',
@@ -111,7 +117,7 @@ export default function Goals() {
         }
         try {
           console.log('Loading goals data from server')
-          const response = await fetch(`http://54.226.7.16/goals?listtype=category`, options)
+          const response = await fetch(`https://trunky.site/goals?listtype=category`, options)
           setGoals(await response.json())
         } catch(error) {
           console.error(error)

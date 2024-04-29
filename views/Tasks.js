@@ -2,7 +2,6 @@ import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Card, IconButton, Surface, Checkbox, FAB, Button, useTheme, Chip, Text, Switch } from 'react-native-paper'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
-// import { BACKEND_IP } from '@env'
 import { useEffect, useState, useCallback } from 'react'
 
 export function TaskSingle({task, categoryMode}) {
@@ -50,7 +49,7 @@ export function TaskSingle({task, categoryMode}) {
             }
             // Make the API update call
             try {
-              let response = await fetch(`http://54.226.7.16/tasks/${payloadObject.id}`, options)
+              let response = await fetch(`https://trunky.site/tasks/${payloadObject.id}`, options)
               let jsonResponse = await response.json()
 
               // Revert if the API call wasn't successful
@@ -134,9 +133,9 @@ export default function Tasks() {
           let response = []
           console.log('Loading tasks data from server')
           if (categoryMode) {
-            response = await fetch(`http://54.226.7.16/tasks?listtype=category`, options)
+            response = await fetch(`https://trunky.site/tasks?listtype=category`, options)
           } else {
-            response = await fetch(`http://54.226.7.16/tasks?listtype=date&page=${page}}`, options)
+            response = await fetch(`https://trunky.site/tasks?listtype=date&page=${page}}`, options)
           }
           const data = await response.json()
           setTasks(data.tasks)
@@ -162,9 +161,9 @@ export default function Tasks() {
         let response = []
         console.log('Loading tasks data from server')
         if (categoryMode) {
-          response = await fetch(`http://54.226.7.16/tasks?listtype=category`, options)
+          response = await fetch(`https://trunky.site/tasks?listtype=category`, options)
         } else {
-          response = await fetch(`http://54.226.7.16/tasks?listtype=date&page=${page}`, options)
+          response = await fetch(`https://trunky.site/tasks?listtype=date&page=${page}`, options)
         }
         const data = await response.json()
         setTasks(data.tasks)

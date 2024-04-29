@@ -1,4 +1,5 @@
-import { PaperProvider, Icon, useTheme, MD3LightTheme as DefaultTheme } from 'react-native-paper'
+import 'expo-dev-client'
+import { PaperProvider, Icon, Button, TextInput, MD3LightTheme as DefaultTheme } from 'react-native-paper'
 import { NavigationContainer } from '@react-navigation/native'
 import Tasks from './views/Tasks.js'
 import TasksDetail from './views/TasksDetail.js'
@@ -7,14 +8,10 @@ import Goals from './views/Goals.js'
 import GoalsDetail from './views/GoalsDetail.js'
 import GoalsEdit from './views/GoalsEdit.js'
 import Dashboard from './views/Dashboard.js'
-// import Schedule from './views/Schedule.js'
-// import ScheduleDetail from './views/ScheduleDetail.js'
-// import ScheduleEdit from './views/ScheduleEdit.js'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { en, registerTranslation } from 'react-native-paper-dates'
-import * as Calendar from 'expo-calendar'
-import React, { useEffect } from 'react'
+import * as React from 'react'
 
 // Register translation for date picker
 registerTranslation('en', en)
@@ -81,30 +78,6 @@ const theme = {
 }
 
 // Create the navigation stacks for each tab as needed
-// const ScheduleStack = createNativeStackNavigator()
-
-// function ScheduleStackScreen() {
-//   return (
-//     <ScheduleStack.Navigator initialRouteName='Schedule'>
-//       <ScheduleStack.Screen
-//         name='Schedule'
-//         component={Schedule}
-//       />
-//       <ScheduleStack.Screen
-//         name='ScheduleDetail'
-//         component={ScheduleDetail}
-//         options={{headerShown:false}}
-//       />
-//       <ScheduleStack.Screen
-//         name='ScheduleEdit'
-//         component={ScheduleEdit}
-//         options={{headerShown:false}}
-//       />
-//     </ScheduleStack.Navigator>
-//   )
-// }
-
-
 const TasksStack = createNativeStackNavigator()
 
 function TasksStackScreen() {
@@ -163,15 +136,15 @@ function GoalsStackScreen() {
 const DashboardStack = createNativeStackNavigator()
 function DashboardStackScreen() {
   return (
-    <GoalsStack.Navigator
+    <DashboardStack.Navigator
       initialRouteName='Dashboard'
       screenOptions={{headerStyle: {backgroundColor: theme.colors.primaryContainer}}}
     >
-      <GoalsStack.Screen
+      <DashboardStack.Screen
         name='Dashboard'
         component={Dashboard}
       />
-    </GoalsStack.Navigator>
+    </DashboardStack.Navigator>
   )
 }
 
@@ -179,18 +152,6 @@ function DashboardStackScreen() {
 const Tab = createBottomTabNavigator()
 
 export default function App() {
-  // useEffect(() => {
-  //   (async () => {
-  //     const { status } = await Calendar.requestCalendarPermissionsAsync()
-  //     if (status === 'granted') {
-  //       const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
-  //       console.log('Here are all your calendars:')
-  //       console.log({calendars})
-  //     }
-  //   })();
-  // }, [])
-
-  // const theme = useTheme()
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
@@ -204,9 +165,6 @@ export default function App() {
                 case 'DashboardStack':
                   iconName = 'home'
                   break
-                // case 'ScheduleStack':
-                //   iconName='calendar-blank'
-                //   break
                 case 'TasksStack':
                   iconName='format-list-checks'
                   break
@@ -224,11 +182,6 @@ export default function App() {
             component={DashboardStackScreen}
             options={{headerShown:false, title: 'Dashboard', tabBarActiveTintColor: theme.colors.primaryTabNavigation}}
           />
-          {/* <Tab.Screen
-            name="ScheduleStack"
-            component={ScheduleStackScreen}
-            options={{headerShown:false, title: 'Schedule'}}
-          /> */}
           <Tab.Screen
             name="TasksStack"
             component={TasksStackScreen}
