@@ -74,7 +74,6 @@ export default function Dashboard() {
   return (
     <View>
       <ScrollView>
-        <Text variant='displaySmall' style={{marginHorizontal:15, marginBottom:15, marginTop:25}}>Hi, Milly</Text>
         <Card style={{marginHorizontal:15, marginVertical:7}}>
           <Card.Content>
             <Text variant="bodyMedium">{quote}</Text>
