@@ -12,9 +12,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { en, registerTranslation } from 'react-native-paper-dates'
 import * as React from 'react'
+import { View } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 
 // Register translation for date picker
 registerTranslation('en', en)
+
+// User context
+export const UserContext = React.createContext('')
 
 // Theme
 const trunkyColorScheme = {
@@ -40,7 +45,7 @@ const trunkyColorScheme = {
     "onBackground": "rgb(25, 28, 28)",
     "surface": "rgb(250, 253, 252)",
     "onSurface": "rgb(25, 28, 28)",
-    "surfaceVariant": "rgb(235, 240, 241)",//"rgb(218, 228, 229)",
+    "surfaceVariant": "rgb(235, 240, 241)",
     "onSurfaceVariant": "rgb(63, 72, 73)",
     "outline": "rgb(111, 121, 122)",
     "outlineVariant": "rgb(190, 200, 201)",
@@ -75,6 +80,24 @@ const trunkyColorScheme = {
 const theme = {
   ...DefaultTheme,
   colors: trunkyColorScheme.colors
+}
+
+// Create the auth navigation stack
+const AuthStack = createNativeStackNavigator()
+function AuthStackScreen() {
+  return (
+    <AuthStack.Navigator
+      initialRouteName='Login'>
+        <AuthStack.Screen
+          name='Login'
+          children={() => <LoginScreen />}
+        />
+        <AuthStack.Screen
+          name='Signup'
+          children={() => <SignupScreen />}
+        />
+    </AuthStack.Navigator>
+  )
 }
 
 // Create the navigation stacks for each tab as needed
@@ -151,11 +174,110 @@ function DashboardStackScreen() {
 // Tab navigation
 const Tab = createBottomTabNavigator()
 
+// Signup Screen
+export function SignupScreen() {
+  const [userContext, setUserContext] = React.useContext(UserContext)
+  const [username, setUsername] = React.useState('')
+  const [password, setPassword]  = React.useState('')
+
+  async function onSignUp() {
+    let bodyObject = {
+      username: username,
+      password: password
+    }
+    console.log(bodyObject)
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bodyObject)
+    }
+    const response = await fetch(`http://192.168.1.178:3000/users`, options)
+    // const response = await fetch(`https://trunky.site/users`, options)
+    const responseJson = await response.json()
+    if (response.status==201) {
+      console.log('setting user')
+      setUserContext(username)
+    }
+  }
+
+  return (
+    <View style={{paddingHorizontal:25, paddingVertical:50}}>
+      <TextInput
+        label='Username'
+        value={username}
+        mode='outlined'
+        onChangeText={un => setUsername(un)}
+        style={{marginVertical:8}}
+      />
+      <TextInput
+        label='Password'
+        value={password}
+        mode='outlined'
+        onChangeText={pw => setPassword(pw)}
+        style={{marginVertical:8}}
+        secureTextEntry
+      />
+      
+      <Button mode='contained' style={{marginTop:30}} onPress={onSignUp}>Sign up</Button>
+    </View>
+  )
+}
+
+// Login Screen
+export function LoginScreen() {
+  const navigation = useNavigation()
+  const [userContext, setUserContext] = React.useContext(UserContext)
+
+  const [username, setUsername] = React.useState('')
+  const [password, setPassword] = React.useState('')
+
+  async function onPress() {
+    const options = {
+      method: 'GET',
+      'Content-Type': 'application/json'
+    }
+    const response = await fetch(`http://192.168.1.178:3000/users/${username}`, options)
+    // const response = await fetch(`https://trunky.site/users/${username}`, options)
+    const responseJson = await response.json()
+    console.log(responseJson)
+    if (password === responseJson.password) {
+      setUserContext(username)
+    }
+  }
+
+  return (
+    <View style={{paddingHorizontal:25, paddingVertical:50}}>
+      <TextInput
+        label='Username'
+        value={username}
+        mode='outlined'
+        onChangeText={un => setUsername(un)}
+        style={{marginVertical:8}}
+      />
+      <TextInput
+        label='Password'
+        value={password}
+        mode='outlined'
+        onChangeText={pw => setPassword(pw)}
+        style={{marginVertical:8}}
+        secureTextEntry
+      />
+      <Button mode='contained' style={{marginTop:30}} onPress={onPress}>Log in</Button>
+      <Button mode='outlined' style={{marginTop:10}} onPress={() => navigation.navigate('Signup')}>Sign up</Button>
+    </View>
+  )
+}
+
 export default function App() {
+  const [userContext, setUserContext] = React.useState('')
   return (
     <PaperProvider theme={theme}>
+    <UserContext.Provider value={[userContext, setUserContext]}>
       <NavigationContainer>
-        <Tab.Navigator
+        {userContext ? (
+          <Tab.Navigator
           initialRouteName='DashboardStack'
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
@@ -193,7 +315,12 @@ export default function App() {
             options={{headerShown:false, title: 'Goals', tabBarActiveTintColor: theme.colors.goalsTabNavigation}}
           />
         </Tab.Navigator>
+        ) : (
+          <AuthStackScreen />
+        )}
+        
       </NavigationContainer>
+      </UserContext.Provider>
     </PaperProvider>
   )
 }
