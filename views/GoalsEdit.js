@@ -2,7 +2,8 @@ import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Card, Text, IconButton, useTheme, TextInput, Portal, Modal, RadioButton, List, Checkbox, Button, Divider, Chip, Surface } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { UserContext } from '../App'
 
 export default function GoalsEdit({ route }) {
   const navigation = useNavigation()
@@ -18,6 +19,7 @@ export default function GoalsEdit({ route }) {
   const [frequency, setFrequency] = useState(goalDetails.frequency)
   const [tasksList, setTasksList] = useState([])
   const [allTasks, setAllTasks] = useState([])
+  const [userContext, setUserContext] = useContext(UserContext)
 
   const showFrequency = () => setFrequencyVisible(true)
   const hideFrequency = () => setFrequencyVisible(false)
@@ -32,11 +34,12 @@ export default function GoalsEdit({ route }) {
       const options = {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': userContext
         }
       }
       try {
-        let response = await fetch(`https://trunky.site/goals/${goalDetails.id}/tasks`, options)
+        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalDetails.id}/tasks`, options)
         let jsonResponse = await response.json()
         setTasksList(jsonResponse.tasks)
         console.log(jsonResponse.tasks)
@@ -189,11 +192,15 @@ export default function GoalsEdit({ route }) {
             title='Add task'
             left={() => <List.Icon icon='plus'/>}
             onPress={async () => {
+              console.log('usercontext:', userContext)
               const options = {
                 method: 'GET',
-                'Content-Type': 'application/json'
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': userContext
+                }
               }
-              const response = await fetch(`https://trunky.site/tasks?listtype=none`)
+              const response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=none`, options)
               const responseJson = await response.json()
               setAllTasks(responseJson.tasks)
               showTasks()
@@ -283,12 +290,13 @@ export default function GoalsEdit({ route }) {
                   let options = {
                     method: 'PUT',
                     headers: {
-                      'Content-Type': 'application/json'
+                      'Content-Type': 'application/json',
+                      'Authorization': userContext
                     },
                     body: JSON.stringify(bodyObject)
                   }
                   try {
-                    let response = await fetch(`https://trunky.site/goals/${goalDetails.id}`, options)
+                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalDetails.id}`, options)
                     let success = await response.json()
                     console.log(success)
                   } catch(error) {
@@ -303,7 +311,7 @@ export default function GoalsEdit({ route }) {
                   }
                   options.body = JSON.stringify({ taskIds: taskIds })
                   try {
-                    let response = await fetch(`https://trunky.site/goals/${goalDetails.id}/tasks`, options)
+                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalDetails.id}/tasks`, options)
                     let success = await response.json()
                     console.log(success)
                     navigation.navigate('Goals')
@@ -317,19 +325,20 @@ export default function GoalsEdit({ route }) {
                     description: desc,
                     frequency: frequency,
                     quantity: quantity,
-                    category: category ? category : 'None'
+                    category: category ? category : 'None',
+                    user: userContext
                   }
                   let options = {
                     method: 'POST',
                     headers: {
-                      'Content-Type': 'application/json'
+                      'Content-Type': 'application/json',
+                      'Authorization': userContext
                     },
                     body: JSON.stringify(bodyObject)
                   }
                   try {
                     console.log('creating a goal')
-                    // Home IP address
-                    let response = await fetch(`https://trunky.site/goals`, options)
+                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals`, options)
                     let success = await response.json()
                     newId = success.id
                     console.log(success)
@@ -346,7 +355,7 @@ export default function GoalsEdit({ route }) {
                   options.body = JSON.stringify({ taskIds: taskIds })
                   options.method= 'PUT'
                   try {
-                    let response = await fetch(`https://trunky.site/goals/${newId}/tasks`, options)
+                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${newId}/tasks`, options)
                     let success = await response.json()
                     console.log(success)
                     navigation.navigate('Goals')
@@ -379,11 +388,12 @@ export default function GoalsEdit({ route }) {
                       let options = {
                         method: 'DELETE',
                         headers: {
-                          'Content-Type': 'application/json'
+                          'Content-Type': 'application/json',
+                          'Authorization': userContext
                         },
                       }
                       try {
-                        let response = await fetch(`https://trunky.site/goals/${goalDetails.id}`, options)
+                        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalDetails.id}`, options)
                         console.log(await response.json())
                         navigation.navigate('Goals')
                       } catch(error) {

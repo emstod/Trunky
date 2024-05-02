@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Text, Divider, IconButton, useTheme, Portal, Modal, Card, Button, Surface, Chip, Checkbox } from 'react-native-paper'
 import { useNavigation } from '@react-navigation/native'
+import { UserContext } from '../App'
 
 export default function TasksDetail({ route }) {
   const navigation = useNavigation()
   const taskId = route.params.taskId
   const theme = useTheme()
   const [taskDetails, setTaskDetails] = useState({})
+  const [userContext, setUserContext] = useContext(UserContext)
 
   // Get the task details from the data source
   useEffect(() => {
@@ -16,11 +18,12 @@ export default function TasksDetail({ route }) {
       const options = {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': userContext
         }
       }
       try {
-        let response = await fetch(`https://trunky.site/tasks/${taskId}`, options)
+        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${taskId}`, options)
         let jsonResponse = await response.json()
         setTaskDetails(jsonResponse.task)
         setCompleted(jsonResponse.task.completed)
@@ -43,11 +46,12 @@ export default function TasksDetail({ route }) {
       const options = {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': userContext
         }
       }
       try {
-        let response = await fetch(`https://trunky.site/tasks/${taskId}/goals?listtype=category`, options)
+        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${taskId}/goals?listtype=category`, options)
         let jsonResponse = await response.json()
         setGoalsList(jsonResponse.goals)
       } catch (error) {
@@ -85,12 +89,13 @@ export default function TasksDetail({ route }) {
                 let options = {
                   method: 'PUT',
                   headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': userContext
                   },
                   body: JSON.stringify(payloadObject)
                 }
                 try {
-                  let response = await fetch(`https://trunky.site/tasks/${payloadObject.id}`, options)
+                  let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${payloadObject.id}`, options)
                   let jsonResponse = await response.json()
                   // Revert the change if the API call didn't work
                   if (jsonResponse.message != "Success") {
@@ -176,11 +181,12 @@ export default function TasksDetail({ route }) {
                       let options = {
                         method: 'DELETE',
                         headers: {
-                          'Content-Type': 'application/json'
+                          'Content-Type': 'application/json',
+                          'Authorization': userContext
                         },
                       }
                       try {
-                        let response = await fetch(`https://trunky.site/tasks/${taskDetails.id}`, options)
+                        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${taskDetails.id}`, options)
                         navigation.navigate('Tasks')
                       } catch(error) {
                         console.error(error)

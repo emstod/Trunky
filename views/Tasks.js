@@ -2,11 +2,13 @@ import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
 import { Card, IconButton, Surface, Checkbox, FAB, Button, useTheme, Chip, Text, Switch } from 'react-native-paper'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useContext } from 'react'
+import { UserContext } from '../App'
 
 export function TaskSingle({task, categoryMode}) {
   const navigation = useNavigation()
   const [completed, setCompleted] = useState(task.completed)
+  const [userContext, setUserContext] = useContext(UserContext)
 
   useEffect(() => {
     setCompleted(task.completed)
@@ -43,13 +45,14 @@ export function TaskSingle({task, categoryMode}) {
             let options = {
               method: 'PUT',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': userContext
               },
               body: JSON.stringify(payloadObject)
             }
             // Make the API update call
             try {
-              let response = await fetch(`https://trunky.site/tasks/${payloadObject.id}`, options)
+              let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${payloadObject.id}`, options)
               let jsonResponse = await response.json()
 
               // Revert if the API call wasn't successful
@@ -82,7 +85,14 @@ export function TaskSingle({task, categoryMode}) {
           icon="pencil"
           mode="contained-tonal"
           size={20}
-          onPress={()=>navigation.navigate('TasksEdit', {taskDetails: task})}
+          onPress={()=> {
+            navigation.navigate('TasksStack', {
+              screen: 'TasksEdit',
+              initial: false,
+              params: {taskDetails: task}
+            })
+          }}
+          
         />
     </Surface>
   )
@@ -114,6 +124,7 @@ export default function Tasks() {
   const [end, setEnd] = useState(false)
   const [categoryMode, setCategoryMode] = useState(false)
   const [page, setPage] = useState(0)
+  const [userContext, setUserContext] = useContext(UserContext)
 
   const onToggleSwitch = () => setCategoryMode(!categoryMode)
 
@@ -126,16 +137,17 @@ export default function Tasks() {
         let options = {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': userContext
           }
         }
         try {
           let response = []
           console.log('Loading tasks data from server')
           if (categoryMode) {
-            response = await fetch(`https://trunky.site/tasks?listtype=category`, options)
+            response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=category`, options)
           } else {
-            response = await fetch(`https://trunky.site/tasks?listtype=date&page=${page}}`, options)
+            response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=date&page=${page}`, options)
           }
           const data = await response.json()
           setTasks(data.tasks)
@@ -154,16 +166,17 @@ export default function Tasks() {
       let options = {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': userContext
         }
       }
       try {
         let response = []
         console.log('Loading tasks data from server')
         if (categoryMode) {
-          response = await fetch(`https://trunky.site/tasks?listtype=category`, options)
+          response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=category`, options)
         } else {
-          response = await fetch(`https://trunky.site/tasks?listtype=date&page=${page}`, options)
+          response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=date&page=${page}`, options)
         }
         const data = await response.json()
         setTasks(data.tasks)
@@ -215,9 +228,15 @@ export default function Tasks() {
       </View>
 
       <ScrollView>
-        {
+        { tasks.length > 0 ? (
           tasks.map((listWithHeader) =>
             <TaskGroup key={listWithHeader[0]} listWithHeader={listWithHeader} categoryMode={categoryMode} />
+          ) ) : (
+            <Card style={{margin:10}}>
+              <Card.Content>
+                <Text variant='bodyLarge'>No future tasks</Text>
+              </Card.Content>
+            </Card>
           )
         }
       </ScrollView>

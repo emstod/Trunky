@@ -1,13 +1,15 @@
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
-import { Card, IconButton, Surface, List, FAB, useTheme } from 'react-native-paper'
+import { Card, IconButton, Surface, List, FAB, useTheme, Text } from 'react-native-paper'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useContext } from 'react'
+import { UserContext } from '../App'
 
 // Single goal component
 export function GoalSingle({goal}) {
   const navigation = useNavigation()
   const [completed, setCompleted] = useState(goal.completed)
+  const [userContext, setUserContext] = useState(UserContext)
 
   // When goal data changes, set completed
   useEffect(() => {
@@ -30,11 +32,12 @@ export function GoalSingle({goal}) {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
+                  'Authorization': userContext
                 },
                 body: JSON.stringify({completed: newCompleted})
               }
               try {
-                let response = await fetch(`https://trunky.site/goalcomplete/${goal.id}/${today.toDateString()}`, options)
+                let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goalcomplete/${goal.id}/${today.toDateString()}`, options)
                 let jsonResponse = await response.json()
                 if(jsonResponse.message == 'Success') {
                   // Set completed only AFTER response from server, otherwise we were getting consistency issues
@@ -102,6 +105,7 @@ function GoalGroup({categoryList}) {
 }
 
 export default function Goals() {
+  const [userContext, setUserContext] = useContext(UserContext)
   const theme = useTheme()
   const [ goals, setGoals ] = useState([])
 
@@ -112,12 +116,13 @@ export default function Goals() {
         let options = {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': userContext
           }
         }
         try {
           console.log('Loading goals data from server')
-          const response = await fetch(`https://trunky.site/goals?listtype=category`, options)
+          const response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals?listtype=category`, options)
           setGoals(await response.json())
         } catch(error) {
           console.error(error)
@@ -149,9 +154,18 @@ export default function Goals() {
       />
       <ScrollView>
         {
-          goals.map((categoryList) => 
-            <GoalGroup key={categoryList[0]} categoryList={categoryList} />
+          goals.length > 0 ? (
+            goals.map((categoryList) => 
+              <GoalGroup key={categoryList[0]} categoryList={categoryList} />
+            )
+          ) : (
+            <Card style={{margin:10}}>
+              <Card.Content>
+                <Text variant='bodyLarge'>No goals</Text>
+              </Card.Content>
+            </Card>
           )
+          
         }
         <StatusBar style="auto" />
       </ScrollView>

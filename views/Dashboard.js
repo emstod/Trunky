@@ -1,12 +1,16 @@
 import { StatusBar } from 'expo-status-bar'
 import { View, ScrollView } from 'react-native'
-import { Card, Text } from 'react-native-paper'
-import { useNavigation, useFocusEffect, useTheme } from '@react-navigation/native'
-import { useEffect, useState, useCallback } from 'react'
+import { Card, Text, Button } from 'react-native-paper'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { useEffect, useState, useCallback, useContext } from 'react'
 import { TaskSingle } from './Tasks'
 import { GoalSingle } from './Goals'
+import { UserContext } from '../App'
+import { UserNameContext } from '../App'
 
 export default function Dashboard() {
+  const [userContext, setUserContext] = useContext(UserContext)
+  const [userNameContext, setUserNameContext] = useContext(UserNameContext)
   const navigation = useNavigation()
   const [quote, setQuote] = useState('')
   const [author, setAuthor] = useState('')
@@ -32,13 +36,13 @@ export default function Dashboard() {
         let options = {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': userContext
           }
         }
         let today = new Date()
         try {
-          console.log('Loading tasks data from server')
-          const response = await fetch(`https://trunky.site/tasks?listtype=none&date=${today.toDateString()}`, options)
+          const response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=none&date=${today.toDateString()}&user=${userContext}`, options)
           let data = await response.json()
           setTasks(data.tasks)
         } catch(error) {
@@ -51,12 +55,12 @@ export default function Dashboard() {
         let options = {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': userContext
           }
         }
         try {
-          console.log('Loading goals data from server')
-          const response = await fetch(`https://trunky.site/goals?listtype=none&frequency=daily`, options)
+          const response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals?listtype=none&frequency=daily`, options)
           let data = await response.json()
           setGoals(data)
         } catch(error) {
@@ -74,6 +78,22 @@ export default function Dashboard() {
   return (
     <View>
       <ScrollView>
+        <View style={{display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginLeft:15, marginTop:30, marginBottom:15}}>
+          <Text variant="displaySmall">Hi, {userNameContext}</Text>
+          <Button
+            mode='contained-tonal'
+            icon=''
+            style={{marginBottom:10, marginHorizontal:15}}
+            onPress={() => {
+              setGoals([])
+              setTasks([])
+              setUserNameContext('')
+              setUserContext('')
+            }}
+          >
+            Log Out
+          </Button>
+        </View>
         <Card style={{marginHorizontal:15, marginVertical:7}}>
           <Card.Content>
             <Text variant="bodyMedium">{quote}</Text>

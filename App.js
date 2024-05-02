@@ -1,5 +1,5 @@
 import 'expo-dev-client'
-import { PaperProvider, Icon, Button, TextInput, MD3LightTheme as DefaultTheme } from 'react-native-paper'
+import { PaperProvider, Icon, Button, TextInput, MD3LightTheme as DefaultTheme, Text } from 'react-native-paper'
 import { NavigationContainer } from '@react-navigation/native'
 import Tasks from './views/Tasks.js'
 import TasksDetail from './views/TasksDetail.js'
@@ -20,6 +20,10 @@ registerTranslation('en', en)
 
 // User context
 export const UserContext = React.createContext('')
+export const UserNameContext = React.createContext('')
+
+// Username
+let userName = ''
 
 // Theme
 const trunkyColorScheme = {
@@ -177,6 +181,7 @@ const Tab = createBottomTabNavigator()
 // Signup Screen
 export function SignupScreen() {
   const [userContext, setUserContext] = React.useContext(UserContext)
+  const [userNameContext, setUserNameContext] = React.useContext(UserNameContext)
   const [username, setUsername] = React.useState('')
   const [password, setPassword]  = React.useState('')
 
@@ -185,20 +190,21 @@ export function SignupScreen() {
       username: username,
       password: password
     }
-    console.log(bodyObject)
     const options = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': 'pending'
       },
       body: JSON.stringify(bodyObject)
     }
-    const response = await fetch(`http://192.168.1.178:3000/users`, options)
+    const response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/users`, options)
     // const response = await fetch(`https://trunky.site/users`, options)
     const responseJson = await response.json()
     if (response.status==201) {
       console.log('setting user')
-      setUserContext(username)
+      setUserContext(responseJson.token)
+      setUserNameContext(username)
     }
   }
 
@@ -229,21 +235,29 @@ export function SignupScreen() {
 export function LoginScreen() {
   const navigation = useNavigation()
   const [userContext, setUserContext] = React.useContext(UserContext)
+  const [userNameContext, setUserNameContext] = React.useContext(UserNameContext)
 
   const [username, setUsername] = React.useState('')
   const [password, setPassword] = React.useState('')
+  const [invalid, setInvalid] = React.useState(false)
 
   async function onPress() {
     const options = {
       method: 'GET',
-      'Content-Type': 'application/json'
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'pending'
+      }
     }
-    const response = await fetch(`http://192.168.1.178:3000/users/${username}`, options)
+    const response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/users/${username}/${password}`, options)
     // const response = await fetch(`https://trunky.site/users/${username}`, options)
     const responseJson = await response.json()
-    console.log(responseJson)
-    if (password === responseJson.password) {
-      setUserContext(username)
+    if (responseJson.token) {
+      setInvalid(false)
+      setUserContext(responseJson.token)
+      setUserNameContext(username)
+    } else {
+      setInvalid(true)
     }
   }
 
@@ -264,6 +278,7 @@ export function LoginScreen() {
         style={{marginVertical:8}}
         secureTextEntry
       />
+      <Text variant='labelLarge' style={{color:theme.colors.error}}>{invalid ? 'Invalid username or password' : ''}</Text>
       <Button mode='contained' style={{marginTop:30}} onPress={onPress}>Log in</Button>
       <Button mode='outlined' style={{marginTop:10}} onPress={() => navigation.navigate('Signup')}>Sign up</Button>
     </View>
@@ -272,55 +287,59 @@ export function LoginScreen() {
 
 export default function App() {
   const [userContext, setUserContext] = React.useState('')
+  const [userNameContext, setUserNameContext] = React.useState('')
+
   return (
     <PaperProvider theme={theme}>
-    <UserContext.Provider value={[userContext, setUserContext]}>
-      <NavigationContainer>
-        {userContext ? (
-          <Tab.Navigator
-          initialRouteName='DashboardStack'
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName
+      <UserNameContext.Provider value={[userContext, setUserContext]}>
+        <UserContext.Provider value={[userNameContext, setUserNameContext]}>
+          <NavigationContainer>
+            {userContext ? (
+              <Tab.Navigator
+              initialRouteName='DashboardStack'
+              screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                  let iconName
 
-              switch (route.name) {
-                case 'DashboardStack':
-                  iconName = 'home'
-                  break
-                case 'TasksStack':
-                  iconName='format-list-checks'
-                  break
-                case 'GoalsStack':
-                  iconName='bullseye-arrow'
-                  break
-              }
+                  switch (route.name) {
+                    case 'DashboardStack':
+                      iconName = 'home'
+                      break
+                    case 'TasksStack':
+                      iconName='format-list-checks'
+                      break
+                    case 'GoalsStack':
+                      iconName='bullseye-arrow'
+                      break
+                  }
 
-              return <Icon source={iconName} color={color} size={size} />
-            }
-          })}
-        >
-          <Tab.Screen 
-            name="DashboardStack"
-            component={DashboardStackScreen}
-            options={{headerShown:false, title: 'Dashboard', tabBarActiveTintColor: theme.colors.primaryTabNavigation}}
-          />
-          <Tab.Screen
-            name="TasksStack"
-            component={TasksStackScreen}
-            options={{headerShown:false, title: 'Tasks', tabBarActiveTintColor: theme.colors.tasksTabNavigation}}
-          />
-          <Tab.Screen
-            name="GoalsStack"
-            component={GoalsStackScreen}
-            options={{headerShown:false, title: 'Goals', tabBarActiveTintColor: theme.colors.goalsTabNavigation}}
-          />
-        </Tab.Navigator>
-        ) : (
-          <AuthStackScreen />
-        )}
-        
-      </NavigationContainer>
-      </UserContext.Provider>
+                  return <Icon source={iconName} color={color} size={size} />
+                }
+              })}
+            >
+              <Tab.Screen 
+                name="DashboardStack"
+                component={DashboardStackScreen}
+                options={{headerShown:false, title: 'Dashboard', tabBarActiveTintColor: theme.colors.primaryTabNavigation}}
+              />
+              <Tab.Screen
+                name="TasksStack"
+                component={TasksStackScreen}
+                options={{headerShown:false, title: 'Tasks', tabBarActiveTintColor: theme.colors.tasksTabNavigation}}
+              />
+              <Tab.Screen
+                name="GoalsStack"
+                component={GoalsStackScreen}
+                options={{headerShown:false, title: 'Goals', tabBarActiveTintColor: theme.colors.goalsTabNavigation}}
+              />
+            </Tab.Navigator>
+            ) : (
+              <AuthStackScreen />
+            )}
+            
+          </NavigationContainer>
+        </UserContext.Provider>
+      </UserNameContext.Provider>
     </PaperProvider>
   )
 }
