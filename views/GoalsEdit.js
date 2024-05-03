@@ -39,7 +39,7 @@ export default function GoalsEdit({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://192.168.20.77:3000/goals/${goalDetails.id}/tasks`, options)
+        let response = await fetch(`https://trunky.site/goals/${goalDetails.id}/tasks`, options)
         let jsonResponse = await response.json()
         setTasksList(jsonResponse.tasks)
       } catch (error) {
@@ -197,7 +197,7 @@ export default function GoalsEdit({ route }) {
                   'Authorization': userContext
                 }
               }
-              const response = await fetch(`http://192.168.20.77:3000/tasks?listtype=none`, options)
+              const response = await fetch(`https://trunky.site/tasks?listtype=none`, options)
               const responseJson = await response.json()
               setAllTasks(responseJson.tasks)
               showTasks()
@@ -293,7 +293,7 @@ export default function GoalsEdit({ route }) {
                     body: JSON.stringify(bodyObject)
                   }
                   try {
-                    let response = await fetch(`http://192.168.20.77:3000/goals/${goalDetails.id}`, options)
+                    let response = await fetch(`https://trunky.site/goals/${goalDetails.id}`, options)
                   } catch(error) {
                     console.error(error)
                     return
@@ -306,7 +306,7 @@ export default function GoalsEdit({ route }) {
                   }
                   options.body = JSON.stringify({ taskIds: taskIds })
                   try {
-                    let response = await fetch(`http://192.168.20.77:3000/goals/${goalDetails.id}/tasks`, options)
+                    let response = await fetch(`https://trunky.site/goals/${goalDetails.id}/tasks`, options)
                     navigation.navigate('Goals')
                   } catch (error) {
                     console.error(error)
@@ -330,7 +330,7 @@ export default function GoalsEdit({ route }) {
                     body: JSON.stringify(bodyObject)
                   }
                   try {
-                    let response = await fetch(`http://192.168.20.77:3000/goals`, options)
+                    let response = await fetch(`https://trunky.site/goals`, options)
                     let success = await response.json()
                     newId = success.id
                   } catch(error) {
@@ -346,7 +346,7 @@ export default function GoalsEdit({ route }) {
                   options.body = JSON.stringify({ taskIds: taskIds })
                   options.method= 'PUT'
                   try {
-                    let response = await fetch(`http://192.168.20.77:3000/goals/${newId}/tasks`, options)
+                    let response = await fetch(`https://trunky.site/goals/${newId}/tasks`, options)
                     navigation.navigate('Goals')
                   } catch (error) {
                     console.error(error)
@@ -381,7 +381,7 @@ export default function GoalsEdit({ route }) {
                         },
                       }
                       try {
-                        let response = await fetch(`http://192.168.20.77:3000/goals/${goalDetails.id}`, options)
+                        let response = await fetch(`https://trunky.site/goals/${goalDetails.id}`, options)
                         navigation.navigate('Goals')
                       } catch(error) {
                         console.error(error)

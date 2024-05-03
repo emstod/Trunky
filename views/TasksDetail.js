@@ -25,7 +25,7 @@ export default function TasksDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://192.168.20.77:3000/tasks/${taskId}/${taskDate}`, options)
+        let response = await fetch(`https://trunky.site/tasks/${taskId}/${taskDate}`, options)
         let jsonResponse = await response.json()
         setTaskDetails(jsonResponse.task)
         setCompleted(jsonResponse.task.completed)
@@ -71,7 +71,7 @@ export default function TasksDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://192.168.20.77:3000/tasks/${taskId}/goals?listtype=category`, options)
+        let response = await fetch(`https://trunky.site/tasks/${taskId}/goals?listtype=category`, options)
         let jsonResponse = await response.json()
         setGoalsList(jsonResponse.goals)
       } catch (error) {
@@ -115,7 +115,7 @@ export default function TasksDetail({ route }) {
                   body: JSON.stringify({...payloadObject, initial_date:taskDetails.date})
                 }
                 try {
-                  let response = await fetch(`http://192.168.20.77:3000/tasks/${payloadObject.id}`, options)
+                  let response = await fetch(`https://trunky.site/tasks/${payloadObject.id}`, options)
                   let jsonResponse = await response.json()
                   // Revert the change if the API call didn't work
                   if (jsonResponse.message != "Success") {
@@ -208,7 +208,7 @@ export default function TasksDetail({ route }) {
                             }
                           }
                           try {
-                            let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/${taskDetails.date}?recur=true`, options)
+                            let response = await fetch(`https://trunky.site/tasks/${taskDetails.id}/${taskDetails.date}?recur=true`, options)
                             navigation.navigate('Tasks')
                           } catch(error) {
                             console.error(error)
@@ -233,7 +233,7 @@ export default function TasksDetail({ route }) {
                         },
                       }
                       try {
-                        let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/${taskDetails.date}`, options)
+                        let response = await fetch(`https://trunky.site/tasks/${taskDetails.id}/${taskDetails.date}`, options)
                         navigation.navigate('Tasks')
                       } catch(error) {
                         console.error(error)

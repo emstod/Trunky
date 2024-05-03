@@ -197,7 +197,7 @@ export function SignupScreen() {
       },
       body: JSON.stringify(bodyObject)
     }
-    const response = await fetch(`http://192.168.20.77:3000/users`, options)
+    const response = await fetch(`https://trunky.site/users`, options)
     // const response = await fetch(`https://trunky.site/users`, options)
     const responseJson = await response.json()
     if (response.status==201) {
@@ -249,7 +249,7 @@ export function LoginScreen() {
       }
     }
     console.log('fetching')
-    const response = await fetch(`http://192.168.20.77:3000/users/${username}/${password}`, options)
+    const response = await fetch(`https://trunky.site/users/${username}/${password}`, options)
     // const response = await fetch(`https://trunky.site/users/${username}`, options)
     const responseJson = await response.json()
     if (responseJson.token) {

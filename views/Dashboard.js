@@ -42,7 +42,7 @@ export default function Dashboard() {
         }
         let today = new Date()
         try {
-          const response = await fetch(`http://192.168.20.77:3000/tasks?listtype=none&date=${today.toDateString()}&user=${userContext}`, options)
+          const response = await fetch(`https://trunky.site/tasks?listtype=none&date=${today.toDateString()}&user=${userContext}`, options)
           let data = await response.json()
           setTasks(data.tasks)
         } catch(error) {
@@ -60,7 +60,7 @@ export default function Dashboard() {
           }
         }
         try {
-          const response = await fetch(`http://192.168.20.77:3000/goals?listtype=none&frequency=daily`, options)
+          const response = await fetch(`https://trunky.site/goals?listtype=none&frequency=daily`, options)
           let data = await response.json()
           setGoals(data)
         } catch(error) {

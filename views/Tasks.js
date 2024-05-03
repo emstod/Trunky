@@ -52,7 +52,7 @@ export function TaskSingle({task, categoryMode}) {
             }
             // Make the API update call
             try {
-              let response = await fetch(`http://192.168.20.77:3000/tasks/${payloadObject.id}`, options)
+              let response = await fetch(`https://trunky.site/tasks/${payloadObject.id}`, options)
               let jsonResponse = await response.json()
 
               // Revert if the API call wasn't successful
@@ -145,9 +145,9 @@ export default function Tasks() {
           let response = []
           console.log('Loading tasks data from server')
           if (categoryMode) {
-            response = await fetch(`http://192.168.20.77:3000/tasks?listtype=category`, options)
+            response = await fetch(`https://trunky.site/tasks?listtype=category`, options)
           } else {
-            response = await fetch(`http://192.168.20.77:3000/tasks?listtype=date&page=${page}`, options)
+            response = await fetch(`https://trunky.site/tasks?listtype=date&page=${page}`, options)
           }
           const data = await response.json()
           setTasks(data.tasks)
@@ -174,9 +174,9 @@ export default function Tasks() {
         let response = []
         console.log('Loading tasks data from server')
         if (categoryMode) {
-          response = await fetch(`http://192.168.20.77:3000/tasks?listtype=category`, options)
+          response = await fetch(`https://trunky.site/tasks?listtype=category`, options)
         } else {
-          response = await fetch(`http://192.168.20.77:3000/tasks?listtype=date&page=${page}`, options)
+          response = await fetch(`https://trunky.site/tasks?listtype=date&page=${page}`, options)
         }
         const data = await response.json()
         setTasks(data.tasks)

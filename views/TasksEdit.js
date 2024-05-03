@@ -52,7 +52,7 @@ export default function TasksEdit({ route }) {
         }
       }
       try {
-        let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/goals`, options)
+        let response = await fetch(`https://trunky.site/tasks/${taskDetails.id}/goals`, options)
         let jsonResponse = await response.json()
         setGoalsList(jsonResponse.goals)
       } catch (error) {
@@ -151,7 +151,7 @@ export default function TasksEdit({ route }) {
               }
             }
             console.log('user context', userContext)
-            const response = await fetch(`http://192.168.20.77:3000/goals?listtype=none`, options)
+            const response = await fetch(`https://trunky.site/goals?listtype=none`, options)
             const responseJson = await response.json()
             setAllGoals(responseJson)
             showGoals()
@@ -290,7 +290,7 @@ export default function TasksEdit({ route }) {
                     body: JSON.stringify({...bodyObject, initial_date:initialDate})
                   }
                   try {
-                    let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}`, options)
+                    let response = await fetch(`https://trunky.site/tasks/${taskDetails.id}`, options)
                     let success = await response.json()
                     console.log(success)
                   } catch(error) {
@@ -305,7 +305,7 @@ export default function TasksEdit({ route }) {
                   }
                   options.body = JSON.stringify({ goalIds: goalIds })
                   try {
-                    let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/goals`, options)
+                    let response = await fetch(`https://trunky.site/tasks/${taskDetails.id}/goals`, options)
                     let success = await response.json()
                     console.log(success)
                     navigation.navigate('Tasks')
@@ -333,7 +333,7 @@ export default function TasksEdit({ route }) {
                   }
                   try {
                     console.log('creating a task')
-                    let response = await fetch(`http://192.168.20.77:3000/tasks`, options)
+                    let response = await fetch(`https://trunky.site/tasks`, options)
                     let success = await response.json()
                     newId = success.id
                     console.log(success)
@@ -350,7 +350,7 @@ export default function TasksEdit({ route }) {
                   options.body = JSON.stringify({ goalIds: goalIds })
                   options.method= 'PUT'
                   try {
-                    let response = await fetch(`http://192.168.20.77:3000/tasks/${newId}/goals`, options)
+                    let response = await fetch(`https://trunky.site/tasks/${newId}/goals`, options)
                     let success = await response.json()
                     console.log(success)
                     navigation.navigate('Tasks')
@@ -388,7 +388,7 @@ export default function TasksEdit({ route }) {
                             }
                           }
                           try {
-                            let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/${taskDetails.date}?recur=true`, options)
+                            let response = await fetch(`https://trunky.site/tasks/${taskDetails.id}/${taskDetails.date}?recur=true`, options)
                             navigation.navigate('Tasks')
                           } catch(error) {
                             console.error(error)
@@ -413,7 +413,7 @@ export default function TasksEdit({ route }) {
                         },
                       }
                       try {
-                        let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/${taskDetails.date}`, options)
+                        let response = await fetch(`https://trunky.site/tasks/${taskDetails.id}/${taskDetails.date}`, options)
                         console.log(await response.json())
                         navigation.navigate('Tasks')
                       } catch(error) {

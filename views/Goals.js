@@ -37,7 +37,7 @@ export function GoalSingle({goal}) {
                 body: JSON.stringify({completed: newCompleted})
               }
               try {
-                let response = await fetch(`http://192.168.20.77:3000/goalcomplete/${goal.id}/${today.toDateString()}`, options)
+                let response = await fetch(`https://trunky.site/goalcomplete/${goal.id}/${today.toDateString()}`, options)
                 let jsonResponse = await response.json()
                 if(jsonResponse.message == 'Success') {
                   // Set completed only AFTER response from server, otherwise we were getting consistency issues
@@ -122,7 +122,7 @@ export default function Goals() {
         }
         try {
           console.log('Loading goals data from server')
-          const response = await fetch(`http://192.168.20.77:3000/goals?listtype=category`, options)
+          const response = await fetch(`https://trunky.site/goals?listtype=category`, options)
           setGoals(await response.json())
         } catch(error) {
           console.error(error)
