@@ -319,7 +319,6 @@ export default function GoalsEdit({ route }) {
                     frequency: frequency,
                     quantity: quantity,
                     category: category ? category : 'None',
-                    user: userContext
                   }
                   let options = {
                     method: 'POST',
