@@ -49,9 +49,7 @@ FOREIGN KEY(taskId) REFERENCES Task(id)
 CREATE TABLE IF NOT EXISTS GoalTask (
 goalId TEXT NOT NULL,
 taskId TEXT NOT NULL,
-PRIMARY KEY(goalId, taskId),
-FOREIGN KEY(goalId) REFERENCES Goal(id),
-FOREIGN KEY(taskId) REFERENCES Task(id)
+PRIMARY KEY(goalId, taskId)
 );
 INSERT INTO GoalTask VALUES('34a58bd4-c38e-4c06-80ef-170f1c06a671','A');
 INSERT INTO GoalTask VALUES('34a58bd4-c38e-4c06-80ef-170f1c06a671','B');
@@ -96,13 +94,14 @@ INSERT INTO Goal VALUES('32ecea2f-0f1f-4887-b02c-c1dc34d3d4fe','Read for 30 minu
 INSERT INTO Goal VALUES('34a58bd4-c38e-4c06-80ef-170f1c06a671','Finish homework before Netflix','','daily',1,'School','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
 INSERT INTO Goal VALUES('a8274dae-c924-4306-b4e6-3ca8d84e3436','Test goal','Hello world','daily',2,'Test','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
 CREATE TABLE IF NOT EXISTS Task (
-id TEXT PRIMARY KEY,
+id TEXT,
 title TEXT,
 date INTEGER,
 description TEXT,
 completed INTEGER,
 category TEXT,
-user TEXT NOT NULL
+user TEXT NOT NULL,
+PRIMARY KEY(title, date)
 );
 INSERT INTO Task VALUES('A','Module 11 Homework','Fri Apr 19 2024','Details on Canvas',1,'School','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
 INSERT INTO Task VALUES('B','Module 12 Homework','Sat Apr 20 2024','Details on Canvas',1,'School','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
@@ -115,7 +114,12 @@ INSERT INTO Task VALUES('2144f82e-5fbf-4056-9507-b1fc2a58bbe5','Completed task',
 INSERT INTO Task VALUES('96f05da3-3f02-4a95-a568-8332aff0b9ee','Return library books','Sat Apr 27 2024','',0,'Miscellaneous','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
 INSERT INTO Task VALUES('48762c6a-3171-44a4-9d29-61023149209c','Trader Joe''s run','Fri Apr 26 2024','',0,'None','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
 INSERT INTO Task VALUES('db59c943-8a79-4b8d-88f1-b6ea662251ac','Weed the garden','Sat Apr 27 2024','',0,'Housekeeping','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
-INSERT INTO Task VALUES('9e65cee2-c6d7-4d5c-bda4-2a2d73b71ae8','Practice flute','Tue Apr 30 2024','',0,'Intellectual','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
+INSERT INTO Task VALUES('9e65cee2-c6d7-4d5c-bda4-2a2d73b71ae8','Practice flute','Fri May 03 2024','',0,'Intellectual','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
 INSERT INTO Task VALUES('db970105-d1b2-4a4c-af34-a5538a026057','Dog park','Mon Apr 29 2024','Meet up with Lexi?',0,'Physical','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
-
+INSERT INTO Task VALUES('77a055d2-e6ee-4285-aaeb-0821a0969a62','Test 2','Thu May 02 2024','',1,'Miscellaneous','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
+INSERT INTO Task VALUES('77a055d2-e6ee-4285-aaeb-0821a0969a62','PICK MEEEEEE','Fri May 03 2024','',1,'Miscellaneous','132ac6f71a6a2971034e4e520fc0de96ada4c6977117d6055f');
+CREATE TABLE IF NOT EXISTS Recur (
+  taskId TEXT,
+  day TEXT
+);
 COMMIT;

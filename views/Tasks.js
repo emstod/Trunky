@@ -48,11 +48,11 @@ export function TaskSingle({task, categoryMode}) {
                 'Content-Type': 'application/json',
                 'Authorization': userContext
               },
-              body: JSON.stringify(payloadObject)
+              body: JSON.stringify({...payloadObject, initial_date:taskDetails.date})
             }
             // Make the API update call
             try {
-              let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${payloadObject.id}`, options)
+              let response = await fetch(`http://192.168.20.77:3000/tasks/${payloadObject.id}`, options)
               let jsonResponse = await response.json()
 
               // Revert if the API call wasn't successful
@@ -72,7 +72,7 @@ export function TaskSingle({task, categoryMode}) {
               navigation.navigate('TasksStack', {
                 screen:'TasksDetail',
                 initial: false,
-                params: {taskId: task.id}
+                params: {taskId: task.id, taskDate: task.date}
               })
             }}
           >
@@ -145,9 +145,9 @@ export default function Tasks() {
           let response = []
           console.log('Loading tasks data from server')
           if (categoryMode) {
-            response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=category`, options)
+            response = await fetch(`http://192.168.20.77:3000/tasks?listtype=category`, options)
           } else {
-            response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=date&page=${page}`, options)
+            response = await fetch(`http://192.168.20.77:3000/tasks?listtype=date&page=${page}`, options)
           }
           const data = await response.json()
           setTasks(data.tasks)
@@ -174,9 +174,9 @@ export default function Tasks() {
         let response = []
         console.log('Loading tasks data from server')
         if (categoryMode) {
-          response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=category`, options)
+          response = await fetch(`http://192.168.20.77:3000/tasks?listtype=category`, options)
         } else {
-          response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=date&page=${page}`, options)
+          response = await fetch(`http://192.168.20.77:3000/tasks?listtype=date&page=${page}`, options)
         }
         const data = await response.json()
         setTasks(data.tasks)
@@ -203,7 +203,16 @@ export default function Tasks() {
               date: '',
               description: '',
               completed: false,
-              category: ''
+              category: '',
+              recur: {
+                Sunday: false,
+                Monday: false,
+                Tuesday: false,
+                Wednesday: false,
+                Thursday: false,
+                Friday: false,
+                Saturday: false
+              }
             }
           })
         }}
@@ -215,7 +224,6 @@ export default function Tasks() {
           mode='text'
           onPress={() => {
             setPage(page + 1)
-            console.log(page)
           }}
           disabled={end}
         >

@@ -22,8 +22,7 @@ registerTranslation('en', en)
 export const UserContext = React.createContext('')
 export const UserNameContext = React.createContext('')
 
-// Username
-let userName = ''
+console.log(process.env.EXPO_PUBLIC_API_URL)
 
 // Theme
 const trunkyColorScheme = {
@@ -198,7 +197,7 @@ export function SignupScreen() {
       },
       body: JSON.stringify(bodyObject)
     }
-    const response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/users`, options)
+    const response = await fetch(`http://192.168.20.77:3000/users`, options)
     // const response = await fetch(`https://trunky.site/users`, options)
     const responseJson = await response.json()
     if (response.status==201) {
@@ -249,7 +248,8 @@ export function LoginScreen() {
         'Authorization': 'pending'
       }
     }
-    const response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/users/${username}/${password}`, options)
+    console.log('fetching')
+    const response = await fetch(`http://192.168.20.77:3000/users/${username}/${password}`, options)
     // const response = await fetch(`https://trunky.site/users/${username}`, options)
     const responseJson = await response.json()
     if (responseJson.token) {

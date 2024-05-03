@@ -23,7 +23,7 @@ export default function GoalsDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalId}`, options)
+        let response = await fetch(`http://192.168.20.77:3000/goals/${goalId}`, options)
         let jsonResponse = await response.json()
         setGoalDetails(jsonResponse.goal)
       } catch (error) {
@@ -49,7 +49,7 @@ export default function GoalsDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalId}/tasks`, options)
+        let response = await fetch(`http://192.168.20.77:3000/goals/${goalId}/tasks`, options)
         let jsonResponse = await response.json()
         setTasksList(jsonResponse.tasks)
       } catch (error) {
@@ -82,7 +82,7 @@ export default function GoalsDetail({ route }) {
                     body: JSON.stringify({completed: newCompleted})
                   }
                   try {
-                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goalcomplete/${goalDetails.id}/${today.toDateString()}`, options)
+                    let response = await fetch(`http://192.168.20.77:3000/goalcomplete/${goalDetails.id}/${today.toDateString()}`, options)
                     let jsonResponse = await response.json()
                     if (jsonResponse.message == "Success") {
                       const goalDetailsTmp = {...goalDetails}
@@ -107,12 +107,13 @@ export default function GoalsDetail({ route }) {
                     method: 'PUT',
                     headers: {
                       'Content-Type': 'application/json',
+                      'Authorization': userContext
                     },
                     body: JSON.stringify({completed: newCompleted})
                   }
                   const today = new Date().toDateString()
                   try {
-                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goalcomplete/${goalDetails.id}/${today}`, options)
+                    let response = await fetch(`http://192.168.20.77:3000/goalcomplete/${goalDetails.id}/${today}`, options)
                     let jsonResponse = await response.json()
                     if (jsonResponse.message == "Success") {
                       const goalDetailsTmp = {...goalDetails}
@@ -153,7 +154,7 @@ export default function GoalsDetail({ route }) {
                       navigation.navigate('TasksStack', {
                         screen:'TasksDetail',
                         initial: false,
-                        params: {taskId: task.id}
+                        params: {taskId: task.id, taskDate: task.date}
                       })
                     }}
                   >
@@ -205,7 +206,7 @@ export default function GoalsDetail({ route }) {
                         }
                       }
                       try {
-                        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalDetails.id}`, options)
+                        let response = await fetch(`http://192.168.20.77:3000/goals/${goalDetails.id}`, options)
                         navigation.navigate('Goals')
                       } catch(error) {
                         console.error(error)

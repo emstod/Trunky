@@ -38,7 +38,6 @@ export default function Schedule() {
     format24h: false,
     renderEvent: renderCustomEvent,
     onBackgroundLongPress: (timeStr, time) => {
-      console.log(timeStr)
       navigation.navigate('ScheduleEdit', {
         eventDetails: {
           end: '',

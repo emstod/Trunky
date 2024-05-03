@@ -39,11 +39,9 @@ export default function GoalsEdit({ route }) {
         }
       }
       try {
-        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalDetails.id}/tasks`, options)
+        let response = await fetch(`http://192.168.20.77:3000/goals/${goalDetails.id}/tasks`, options)
         let jsonResponse = await response.json()
         setTasksList(jsonResponse.tasks)
-        console.log(jsonResponse.tasks)
-        console.log(tasksList)
       } catch (error) {
         console.error(error)
       }
@@ -172,7 +170,7 @@ export default function GoalsEdit({ route }) {
               <List.Item
                 key={task.id}
                 title={task.title}
-                left={() => <List.Icon icon='bullseye-arrow'/>}
+                left={() => <List.Icon icon='format-list-checks'/>}
                 right={() => <IconButton
                   icon='minus'
                   style={{margin:0}}
@@ -192,7 +190,6 @@ export default function GoalsEdit({ route }) {
             title='Add task'
             left={() => <List.Icon icon='plus'/>}
             onPress={async () => {
-              console.log('usercontext:', userContext)
               const options = {
                 method: 'GET',
                 headers: {
@@ -200,7 +197,7 @@ export default function GoalsEdit({ route }) {
                   'Authorization': userContext
                 }
               }
-              const response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks?listtype=none`, options)
+              const response = await fetch(`http://192.168.20.77:3000/tasks?listtype=none`, options)
               const responseJson = await response.json()
               setAllTasks(responseJson.tasks)
               showTasks()
@@ -296,9 +293,7 @@ export default function GoalsEdit({ route }) {
                     body: JSON.stringify(bodyObject)
                   }
                   try {
-                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalDetails.id}`, options)
-                    let success = await response.json()
-                    console.log(success)
+                    let response = await fetch(`http://192.168.20.77:3000/goals/${goalDetails.id}`, options)
                   } catch(error) {
                     console.error(error)
                     return
@@ -311,9 +306,7 @@ export default function GoalsEdit({ route }) {
                   }
                   options.body = JSON.stringify({ taskIds: taskIds })
                   try {
-                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalDetails.id}/tasks`, options)
-                    let success = await response.json()
-                    console.log(success)
+                    let response = await fetch(`http://192.168.20.77:3000/goals/${goalDetails.id}/tasks`, options)
                     navigation.navigate('Goals')
                   } catch (error) {
                     console.error(error)
@@ -337,11 +330,9 @@ export default function GoalsEdit({ route }) {
                     body: JSON.stringify(bodyObject)
                   }
                   try {
-                    console.log('creating a goal')
-                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals`, options)
+                    let response = await fetch(`http://192.168.20.77:3000/goals`, options)
                     let success = await response.json()
                     newId = success.id
-                    console.log(success)
                   } catch(error) {
                     console.error(error)
                     return
@@ -355,9 +346,7 @@ export default function GoalsEdit({ route }) {
                   options.body = JSON.stringify({ taskIds: taskIds })
                   options.method= 'PUT'
                   try {
-                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${newId}/tasks`, options)
-                    let success = await response.json()
-                    console.log(success)
+                    let response = await fetch(`http://192.168.20.77:3000/goals/${newId}/tasks`, options)
                     navigation.navigate('Goals')
                   } catch (error) {
                     console.error(error)
@@ -384,7 +373,6 @@ export default function GoalsEdit({ route }) {
                     mode='contained'
                     buttonColor={theme.colors.error}
                     onPress={ async () => {
-                      console.log('sending delete')
                       let options = {
                         method: 'DELETE',
                         headers: {
@@ -393,11 +381,10 @@ export default function GoalsEdit({ route }) {
                         },
                       }
                       try {
-                        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals/${goalDetails.id}`, options)
-                        console.log(await response.json())
+                        let response = await fetch(`http://192.168.20.77:3000/goals/${goalDetails.id}`, options)
                         navigation.navigate('Goals')
                       } catch(error) {
-                        console.log(error)
+                        console.error(error)
                       }
                     }}
                   >

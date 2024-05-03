@@ -8,9 +8,11 @@ import { UserContext } from '../App'
 export default function TasksDetail({ route }) {
   const navigation = useNavigation()
   const taskId = route.params.taskId
+  const taskDate = route.params.taskDate
   const theme = useTheme()
   const [taskDetails, setTaskDetails] = useState({})
   const [userContext, setUserContext] = useContext(UserContext)
+  const [recurStr, setRecurStr] = useState('')
 
   // Get the task details from the data source
   useEffect(() => {
@@ -23,10 +25,19 @@ export default function TasksDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${taskId}`, options)
+        let response = await fetch(`http://192.168.20.77:3000/tasks/${taskId}/${taskDate}`, options)
         let jsonResponse = await response.json()
         setTaskDetails(jsonResponse.task)
         setCompleted(jsonResponse.task.completed)
+
+        // Set a string to show when the task recurs
+        let recur = jsonResponse.task.recur
+        let newRecurStr = 'Repeats '
+        for (let day in recur) {
+          if (recur[day]) newRecurStr += `${day}, `
+        }
+        if (newRecurStr.length > 8) setRecurStr(newRecurStr.substring(0, newRecurStr.length - 2))
+        else setRecurStr('')
       } catch (error) {
         console.error(error)
       }
@@ -39,6 +50,15 @@ export default function TasksDetail({ route }) {
   const tdShowDelete = () => setTasksDetailDeleteVisible(true)
   const tdHideDelete = () => setTasksDetailDeleteVisible(false)
   const [completed, setCompleted] = useState(taskDetails.completed)
+  
+  // Get whether this is a recurring task initially
+  let isRecurring = false
+  for (let day in taskDetails.recur) {
+    if (taskDetails.recur[day]) {
+      isRecurring = true
+    }
+  }
+  const [initialRecur, setInitialRecur] = useState(isRecurring ? true : false)
 
   // Get the list of linked goals from the backend
   useEffect(() => {
@@ -51,7 +71,7 @@ export default function TasksDetail({ route }) {
         }
       }
       try {
-        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${taskId}/goals?listtype=category`, options)
+        let response = await fetch(`http://192.168.20.77:3000/tasks/${taskId}/goals?listtype=category`, options)
         let jsonResponse = await response.json()
         setGoalsList(jsonResponse.goals)
       } catch (error) {
@@ -92,10 +112,10 @@ export default function TasksDetail({ route }) {
                     'Content-Type': 'application/json',
                     'Authorization': userContext
                   },
-                  body: JSON.stringify(payloadObject)
+                  body: JSON.stringify({...payloadObject, initial_date:taskDetails.date})
                 }
                 try {
-                  let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${payloadObject.id}`, options)
+                  let response = await fetch(`http://192.168.20.77:3000/tasks/${payloadObject.id}`, options)
                   let jsonResponse = await response.json()
                   // Revert the change if the API call didn't work
                   if (jsonResponse.message != "Success") {
@@ -115,6 +135,7 @@ export default function TasksDetail({ route }) {
           <View style={{flexDirection:'row', marginVertical:15}}>
             <Chip><Text variant='labelLarge'>Category:</Text> <Text>{taskDetails.category}</Text></Chip>
           </View>
+          <Text style={{display:recurStr ? 'flex' : 'none'}}>{recurStr}</Text>
 
           <Divider style={{marginVertical:15}} />
 
@@ -174,6 +195,32 @@ export default function TasksDetail({ route }) {
                   <Button mode='outlined' onPress={tdHideDelete}>
                     Cancel
                   </Button>
+                  {
+                    recurStr ? (
+                      <Button 
+                        mode='contained'
+                        onPress={async () => {
+                          let options = {
+                            method: 'DELETE',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Authorization': userContext
+                            }
+                          }
+                          try {
+                            let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/${taskDetails.date}?recur=true`, options)
+                            navigation.navigate('Tasks')
+                          } catch(error) {
+                            console.error(error)
+                          }
+                        }}
+                      >
+                        Delete All
+                      </Button>
+                    ) : (
+                      <></>
+                    )
+                  }
                   <Button
                     mode='contained'
                     buttonColor={theme.colors.error}
@@ -186,7 +233,7 @@ export default function TasksDetail({ route }) {
                         },
                       }
                       try {
-                        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${taskDetails.id}`, options)
+                        let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/${taskDetails.date}`, options)
                         navigation.navigate('Tasks')
                       } catch(error) {
                         console.error(error)

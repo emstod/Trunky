@@ -5,6 +5,7 @@ import { Card, Text, IconButton, useTheme, TextInput, Portal, Modal, List, Check
 import { DatePickerInput } from 'react-native-paper-dates'
 import { useNavigation } from '@react-navigation/native'
 import { UserContext } from '../App'
+import { initial } from 'lodash'
 
 export default function TasksEdit({ route }) {
   const navigation = useNavigation()
@@ -20,6 +21,20 @@ export default function TasksEdit({ route }) {
   const [goalsList, setGoalsList] = useState([])
   const [allGoals, setAllGoals] = useState([])
   const [userContext, setUserContext] = useContext(UserContext)
+  const [recur, setRecur] = useState(taskDetails.recur)
+
+  // Get whether this is a recurring task initially
+  let isRecurring = false
+  for (let day in recur) {
+    if (recur[day]) {
+      isRecurring = true
+    }
+  }
+  const [initialRecur, setInitialRecur] = useState(isRecurring ? true : false)
+  const [initialDate, setInitialDate] = useState(taskDetails.date)
+  const [recurDaily, setRecurDaily] = useState(isRecurring)
+
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
   const showDelete = () => setTasksEditDeleteVisible(true)
   const hideDelete = () => setTasksEditDeleteVisible(false)
@@ -37,7 +52,7 @@ export default function TasksEdit({ route }) {
         }
       }
       try {
-        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${taskDetails.id}/goals`, options)
+        let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/goals`, options)
         let jsonResponse = await response.json()
         setGoalsList(jsonResponse.goals)
       } catch (error) {
@@ -130,10 +145,13 @@ export default function TasksEdit({ route }) {
           onPress={async () => {
             const options = {
               method: 'GET',
-              'Content-Type': 'application/json',
-              'Authorization': userContext
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': userContext
+              }
             }
-            const response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/goals?listtype=none`)
+            console.log('user context', userContext)
+            const response = await fetch(`http://192.168.20.77:3000/goals?listtype=none`, options)
             const responseJson = await response.json()
             setAllGoals(responseJson)
             showGoals()
@@ -189,6 +207,48 @@ export default function TasksEdit({ route }) {
             </Modal>
           </Portal>
 
+          <Divider style={{marginVertical:15}} />
+
+          {/* Recurring settings */}
+          <Text variant='titleMedium'>Repeat task:</Text>
+          <View style={{display:'flex', gap:-15}}>
+            <List.Item
+              title={'Every day'}
+              key={'daily'}
+              left={() => <Checkbox
+                  status={recurDaily ? 'checked' : 'unchecked'}
+                  onPress={() => {
+                    // Set all days to true
+                    setRecurDaily(!recurDaily)
+                    const newRecur = {...recur}
+                    for (let day in newRecur) {
+                      newRecur[day] = !recurDaily
+                    }
+                    setRecur(newRecur)
+                  }}
+                />}
+              />
+            {
+              daysOfWeek.map((day) => 
+                <List.Item
+                  title={day}
+                  key={day}
+                  left={() => <Checkbox
+                    status={recur[day] ? 'checked' : 'unchecked'}
+                    onPress={() => {
+                      const newRecur = {...recur}
+                      newRecur[day] = !recur[day]
+                      if (!newRecur[day]) setRecurDaily(false)
+                      setRecur(newRecur)
+                    }}
+                  />}
+                />
+              )
+            }
+            
+            
+          </View>
+
           <Divider style={{marginTop:15}} />
 
           {/* Buttons */}
@@ -219,7 +279,7 @@ export default function TasksEdit({ route }) {
                     description: desc,
                     completed: completed,
                     category: category ? category : 'None',
-                    user: userContext
+                    recur: recur
                   }
                   let options = {
                     method: 'PUT',
@@ -227,10 +287,10 @@ export default function TasksEdit({ route }) {
                       'Content-Type': 'application/json',
                       'Authorization': userContext
                     },
-                    body: JSON.stringify(bodyObject)
+                    body: JSON.stringify({...bodyObject, initial_date:initialDate})
                   }
                   try {
-                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${taskDetails.id}`, options)
+                    let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}`, options)
                     let success = await response.json()
                     console.log(success)
                   } catch(error) {
@@ -245,7 +305,7 @@ export default function TasksEdit({ route }) {
                   }
                   options.body = JSON.stringify({ goalIds: goalIds })
                   try {
-                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${taskDetails.id}/goals`, options)
+                    let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/goals`, options)
                     let success = await response.json()
                     console.log(success)
                     navigation.navigate('Tasks')
@@ -261,7 +321,7 @@ export default function TasksEdit({ route }) {
                     description: desc,
                     completed: completed,
                     category: category ? category : 'None',
-                    user: userContext
+                    recur: recur
                   }
                   let options = {
                     method: 'POST',
@@ -273,7 +333,7 @@ export default function TasksEdit({ route }) {
                   }
                   try {
                     console.log('creating a task')
-                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks`, options)
+                    let response = await fetch(`http://192.168.20.77:3000/tasks`, options)
                     let success = await response.json()
                     newId = success.id
                     console.log(success)
@@ -290,7 +350,7 @@ export default function TasksEdit({ route }) {
                   options.body = JSON.stringify({ goalIds: goalIds })
                   options.method= 'PUT'
                   try {
-                    let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${newId}/goals`, options)
+                    let response = await fetch(`http://192.168.20.77:3000/tasks/${newId}/goals`, options)
                     let success = await response.json()
                     console.log(success)
                     navigation.navigate('Tasks')
@@ -315,6 +375,32 @@ export default function TasksEdit({ route }) {
                   <Button mode='outlined' onPress={hideDelete}>
                     Cancel
                   </Button>
+                  {
+                    initialRecur ? (
+                      <Button 
+                        mode='contained'
+                        onPress={async () => {
+                          let options = {
+                            method: 'DELETE',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Authorization': userContext
+                            }
+                          }
+                          try {
+                            let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/${taskDetails.date}?recur=true`, options)
+                            navigation.navigate('Tasks')
+                          } catch(error) {
+                            console.error(error)
+                          }
+                        }}
+                      >
+                        Delete All
+                      </Button>
+                    ) : (
+                      <></>
+                    )
+                  }
                   <Button
                     mode='contained'
                     buttonColor={theme.colors.error}
@@ -327,7 +413,7 @@ export default function TasksEdit({ route }) {
                         },
                       }
                       try {
-                        let response = await fetch(`${process.env.EXPO_PUBLIC_DB_URL_TEST}/tasks/${taskDetails.id}`, options)
+                        let response = await fetch(`http://192.168.20.77:3000/tasks/${taskDetails.id}/${taskDetails.date}`, options)
                         console.log(await response.json())
                         navigation.navigate('Tasks')
                       } catch(error) {
