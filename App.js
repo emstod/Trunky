@@ -193,7 +193,7 @@ export function SignupScreen() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'pending'
+        'Authorization': 'f6323a6a55b4e06354d00d098c34a2f4470bd3d1d629b93b5f'
       },
       body: JSON.stringify(bodyObject)
     }
@@ -245,13 +245,14 @@ export function LoginScreen() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'pending'
+        'Authorization': 'f6323a6a55b4e06354d00d098c34a2f4470bd3d1d629b93b5f'
       }
     }
     console.log('fetching')
     const response = await fetch(`https://trunky.site/users/${username}/${password}`, options)
     // const response = await fetch(`https://trunky.site/users/${username}`, options)
     const responseJson = await response.json()
+    console.log(responseJson)
     if (responseJson.token) {
       setInvalid(false)
       setUserContext(responseJson.token)
